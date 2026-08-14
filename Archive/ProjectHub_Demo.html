@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProjectHub · Management System</title>
+<style>
+  :root{
+    --bg:#0e1016; --panel:#161922; --panel2:#1c2029; --panel3:#222735; --line:#2a3040;
+    --txt:#e8ebf2; --muted:#9aa4b8; --faint:#6b7488;
+    --brand:#4f7cff; --brand2:#6c8bff; --brandsoft:rgba(79,124,255,.14);
+    --green:#22c55e; --yellow:#eab308; --orange:#f97316; --red:#ef4444; --gray:#64748b; --purple:#9b6bff;
+    --radius:16px; --shadow:0 8px 30px rgba(0,0,0,.28);
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+  body.light{
+    --bg:#f4f6fb; --panel:#ffffff; --panel2:#f1f4fa; --panel3:#e9edf6; --line:#e2e7f0;
+    --txt:#1a2233; --muted:#5b6577; --faint:#8a93a6; --brandsoft:rgba(79,124,255,.1);
+    --shadow:0 8px 30px rgba(20,30,60,.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--txt);font-size:14px;transition:background .3s,color .3s}
+  a{color:inherit;text-decoration:none}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{background:var(--line);border-radius:20px}
+  ::-webkit-scrollbar-thumb:hover{background:var(--faint)}
+  .app{display:flex;min-height:100vh}
+
+  /* ===== SIDEBAR ===== */
+  .sidebar{width:238px;background:var(--panel);border-right:1px solid var(--line);padding:18px 14px;position:fixed;height:100vh;display:flex;flex-direction:column;z-index:20}
+  .logo{display:flex;align-items:center;gap:11px;padding:6px 8px 18px;border-bottom:1px solid var(--line);margin-bottom:14px}
+  .logo .mark{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--brand),var(--purple));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:#fff;box-shadow:0 4px 14px rgba(79,124,255,.4)}
+  .logo b{font-size:15px;letter-spacing:.2px}
+  .logo span{display:block;font-size:11px;color:var(--muted);font-weight:400}
+  .nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:11px;color:var(--muted);font-weight:500;margin-bottom:3px;cursor:pointer;transition:background .18s var(--ease),color .18s,transform .18s var(--ease);position:relative}
+  .nav a:hover{background:var(--panel2);color:var(--txt);transform:translateX(2px)}
+  .nav a.active{background:var(--brandsoft);color:var(--brand)}
+  .nav a.active::before{content:"";position:absolute;left:-14px;top:8px;bottom:8px;width:3px;background:var(--brand);border-radius:0 4px 4px 0}
+  .nav .lbl{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--faint);padding:14px 12px 6px}
+  .ic{width:18px;text-align:center;font-size:15px}
+  .side-foot{margin-top:auto;padding-top:14px;border-top:1px solid var(--line)}
+  .userbox{display:flex;align-items:center;gap:10px;padding:8px;border-radius:10px;transition:background .18s}
+  .userbox:hover{background:var(--panel2)}
+  .avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#f97316,#ef4444);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
+
+  /* ===== MAIN ===== */
+  .main{margin-left:238px;flex:1;padding:22px 30px 70px;min-width:0}
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;gap:16px;flex-wrap:wrap}
+  .topbar h1{font-size:23px;font-weight:700;letter-spacing:-.2px}
+  .topbar .sub{color:var(--muted);font-size:13px;margin-top:3px}
+  .search{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:10px 14px;color:var(--txt);width:250px;transition:border .18s,box-shadow .18s}
+  .search:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brandsoft)}
+  .btn{background:var(--brand);color:#fff;border:none;padding:10px 16px;border-radius:11px;font-weight:600;cursor:pointer;font-size:13px;transition:transform .15s var(--ease),box-shadow .18s,background .18s;display:inline-flex;align-items:center;gap:7px}
+  .btn:hover{background:var(--brand2);transform:translateY(-1px);box-shadow:0 6px 18px rgba(79,124,255,.35)}
+  .btn:active{transform:translateY(0)}
+  .btn.ghost{background:var(--panel2);border:1px solid var(--line);color:var(--txt)}
+  .btn.ghost:hover{background:var(--panel3);box-shadow:none}
+  .btn.sm{padding:7px 12px;font-size:12px}
+  .row{display:flex;gap:10px;align-items:center}
+  .iconbtn{width:38px;height:38px;border-radius:11px;background:var(--panel2);border:1px solid var(--line);color:var(--txt);cursor:pointer;font-size:15px;transition:background .18s,transform .15s}
+  .iconbtn:hover{background:var(--panel3);transform:translateY(-1px)}
+
+  /* export dropdown */
+  .dd{position:relative;display:inline-block}
+  .dd-menu{position:absolute;right:0;top:46px;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);min-width:190px;padding:6px;z-index:30;opacity:0;transform:translateY(-6px);pointer-events:none;transition:opacity .18s,transform .18s var(--ease)}
+  .dd.open .dd-menu{opacity:1;transform:translateY(0);pointer-events:auto}
+  .dd-menu a{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:8px;font-size:13px;color:var(--txt);cursor:pointer;transition:background .15s}
+  .dd-menu a:hover{background:var(--panel2)}
+  .dd-menu .sep{height:1px;background:var(--line);margin:4px 6px}
+
+  /* ===== CARDS ===== */
+  .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:20px}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:17px;position:relative;overflow:hidden;transition:transform .2s var(--ease),border-color .2s;animation:rise .5s var(--ease) both}
+  .kpi:hover{transform:translateY(-3px);border-color:var(--brand)}
+  .kpi::after{content:"";position:absolute;right:-20px;top:-20px;width:70px;height:70px;border-radius:50%;background:var(--brandsoft);opacity:.5}
+  .kpi .lbl{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:6px;position:relative}
+  .kpi .val{font-size:27px;font-weight:800;margin-top:9px;position:relative}
+  .kpi .tag{font-size:11px;margin-top:7px;color:var(--faint);position:relative}
+  .kpi:nth-child(1){animation-delay:.03s}.kpi:nth-child(2){animation-delay:.08s}.kpi:nth-child(3){animation-delay:.13s}
+  .kpi:nth-child(4){animation-delay:.18s}.kpi:nth-child(5){animation-delay:.23s}.kpi:nth-child(6){animation-delay:.28s}
+
+  .grid2{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;margin-bottom:18px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;animation:rise .5s var(--ease) both;animation-delay:.15s}
+  .panel h3{font-size:14.5px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .panel h3 .mini{font-size:11px;color:var(--muted);font-weight:400}
+
+  /* progress bars */
+  .pline{margin-bottom:15px}
+  .pline .top{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:7px}
+  .bar{height:9px;background:var(--panel2);border-radius:20px;overflow:hidden}
+  .bar>i{display:block;height:100%;border-radius:20px;background:linear-gradient(90deg,var(--brand),var(--purple));width:0;transition:width 1.1s var(--ease)}
+
+  /* donut */
+  .donut-wrap{display:flex;align-items:center;gap:24px}
+  .legend div{display:flex;align-items:center;gap:9px;font-size:12.5px;margin-bottom:11px;color:var(--muted)}
+  .dot{width:11px;height:11px;border-radius:4px;display:inline-block}
+  .donut circle{transition:stroke-dasharray 1s var(--ease)}
+
+  /* ===== TABLE ===== */
+  .tablewrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse}
+  th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);padding:11px 13px;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer;user-select:none}
+  th:hover{color:var(--txt)}
+  td{padding:12px 13px;border-bottom:1px solid var(--line);font-size:13px}
+  tbody tr{transition:background .15s}
+  tbody tr:hover td{background:var(--panel2)}
+  .badge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block;white-space:nowrap}
+  .b-green{background:rgba(34,197,94,.15);color:#4ade80}
+  .b-yellow{background:rgba(234,179,8,.16);color:#facc15}
+  .b-orange{background:rgba(249,115,22,.16);color:#fb923c}
+  .b-red{background:rgba(239,68,68,.15);color:#f87171}
+  .b-gray{background:rgba(100,116,139,.2);color:#94a3b8}
+  .b-blue{background:rgba(79,124,255,.18);color:#93b0ff}
+  .b-purple{background:rgba(155,107,255,.18);color:#c0a4ff}
+  .pic{display:inline-flex;align-items:center;gap:8px}
+  .pic .ava{width:25px;height:25px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--purple));font-size:10px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
+  .mini-bar{width:64px;height:6px;background:var(--panel2);border-radius:20px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:8px}
+  .mini-bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--purple))}
+
+  /* project cards */
+  .pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .pcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:19px;cursor:pointer;transition:transform .2s var(--ease),border-color .2s,box-shadow .2s;animation:rise .5s var(--ease) both}
+  .pcard:hover{border-color:var(--brand);transform:translateY(-4px);box-shadow:var(--shadow)}
+  .pcard .code{font-size:11px;color:var(--faint);letter-spacing:.6px;font-weight:600}
+  .pcard .name{font-size:15.5px;font-weight:700;margin:7px 0 14px}
+  .pcard .meta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-top:12px;align-items:center}
+
+  /* tabs */
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px}
+  .tabs a{padding:11px 16px;color:var(--muted);font-weight:600;font-size:13px;cursor:pointer;border-bottom:2px solid transparent;transition:color .18s,border-color .18s}
+  .tabs a:hover{color:var(--txt)}
+  .tabs a.active{color:var(--brand);border-color:var(--brand)}
+
+  .view{display:none}
+  .view.active{display:block;animation:fade .35s var(--ease)}
+
+  .filters{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+  .filters select,.filters input{background:var(--panel2);border:1px solid var(--line);color:var(--txt);padding:9px 12px;border-radius:10px;font-size:12.5px;transition:border .18s}
+  .filters select:focus,.filters input:focus{outline:none;border-color:var(--brand)}
+
+  .hp{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .chip{background:var(--panel2);border:1px solid var(--line);padding:7px 13px;border-radius:20px;font-size:12px;color:var(--muted);transition:transform .15s}
+  .chip:hover{transform:translateY(-1px)}
+
+  /* detail */
+  .dhead{display:flex;justify-content:space-between;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;margin-bottom:18px;gap:20px;flex-wrap:wrap}
+  .dhead h2{font-size:21px;margin-top:12px}
+  .dmeta{display:grid;grid-template-columns:repeat(4,auto);gap:28px;margin-top:18px}
+  .dmeta div span{display:block;color:var(--faint);font-size:11px;margin-bottom:4px;letter-spacing:.4px}
+  .dmeta div b{font-size:13.5px}
+  .ring{width:104px;height:104px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+  /* kanban */
+  .kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .kcol{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px;min-height:220px}
+  .kcol h4{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:13px;display:flex;justify-content:space-between;align-items:center}
+  .kcol h4 .cnt{background:var(--panel2);border-radius:20px;padding:2px 9px;font-size:11px}
+  .ktask{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:13px;margin-bottom:11px;cursor:grab;transition:transform .18s var(--ease),box-shadow .18s,border-color .18s}
+  .ktask:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--brand)}
+  .ktask:active{cursor:grabbing}
+  .ktask .t{font-size:12.5px;font-weight:600;margin-bottom:9px;line-height:1.35}
+  .ktask .b{display:flex;justify-content:space-between;align-items:center}
+
+  /* activity timeline */
+  .tl{border-left:2px solid var(--line);margin-left:8px;padding-left:22px}
+  .tl .item{margin-bottom:20px;position:relative}
+  .tl .item:last-child{margin-bottom:0}
+  .tl .item .dotm{position:absolute;left:-29px;top:2px;width:11px;height:11px;border-radius:50%;border:2px solid var(--panel)}
+  .tl .item .ts{color:var(--faint);font-size:12px;margin-top:3px}
+
+  /* modal */
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:50;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+  .modal-bg.show{display:flex;animation:fade .2s}
+  .modal{background:var(--panel);border:1px solid var(--line);border-radius:18px;width:540px;max-width:92vw;padding:26px;max-height:90vh;overflow:auto;animation:pop .28s var(--ease)}
+  .modal h3{margin-bottom:18px;font-size:17px}
+  .field{margin-bottom:15px}
+  .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+  .field label .req{color:var(--red)}
+  .field input,.field select,.field textarea{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--txt);padding:10px 12px;border-radius:10px;font-size:13px;font-family:inherit;transition:border .18s,box-shadow .18s}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px var(--brandsoft)}
+  .f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .modal-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:10px}
+  .note{font-size:11.5px;color:var(--muted);background:var(--panel2);padding:11px 13px;border-radius:9px;border-left:3px solid var(--brand);margin-bottom:16px;line-height:1.5}
+
+  /* toast */
+  .toast{position:fixed;bottom:24px;right:24px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--green);border-radius:12px;padding:14px 18px;box-shadow:var(--shadow);z-index:60;display:flex;align-items:center;gap:11px;transform:translateY(80px);opacity:0;transition:transform .35s var(--ease),opacity .35s}
+  .toast.show{transform:translateY(0);opacity:1}
+
+  /* animations */
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  @keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  @media(max-width:1150px){.kpis{grid-template-columns:repeat(3,1fr)}.grid2{grid-template-columns:1fr}.pgrid{grid-template-columns:1fr 1fr}.kanban{grid-template-columns:1fr 1fr}.dmeta{grid-template-columns:repeat(2,auto)}}
+
+  /* print */
+  @media print{
+    .sidebar,.topbar .row,.tabs,.filters,.btn,.iconbtn,.dd{display:none!important}
+    .main{margin:0;padding:0}
+    body{background:#fff;color:#000}
+    .panel,.kpi,.pcard,.dhead{border:1px solid #ccc;box-shadow:none;animation:none;break-inside:avoid}
+    .view{display:block!important}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="mark">PH</div>
+      <div><b>ProjectHub</b><span>Management System</span></div>
+    </div>
+    <nav class="nav">
+      <div class="lbl">Menu</div>
+      <a class="active" onclick="go('dashboard',this)"><span class="ic">▦</span> Dashboard</a>
+      <a onclick="go('projects',this)"><span class="ic">▤</span> Projects</a>
+      <a onclick="go('detail',this)"><span class="ic">◈</span> Project Detail</a>
+      <a onclick="go('tasks',this)"><span class="ic">☑</span> My Tasks</a>
+      <div class="lbl">Analyze</div>
+      <a onclick="go('reports',this)"><span class="ic">📊</span> Reports</a>
+      <a onclick="go('reports',this)"><span class="ic">⚑</span> Issues</a>
+    </nav>
+    <div class="side-foot">
+      <div class="userbox">
+        <div class="avatar">HM</div>
+        <div style="flex:1"><b style="font-size:13px">Hanif Mu'taz</b><span style="font-size:11px;color:var(--muted);display:block">Kaizen · Admin</span></div>
+        <span class="iconbtn" style="width:32px;height:32px;font-size:14px" onclick="toggleTheme()" title="Ganti tema">◐</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- ========= DASHBOARD ========= -->
+    <section id="dashboard" class="view active">
+      <div class="topbar">
+        <div><h1>Dashboard</h1><div class="sub">Real-time overview · Updated 14 Aug 2026</div></div>
+        <div class="row">
+          <input class="search" placeholder="🔍  Cari project / task...">
+          <div class="dd" id="ddExport">
+            <button class="btn ghost" onclick="toggleDD('ddExport')">⬇ Export</button>
+            <div class="dd-menu">
+              <a onclick="exportCSV('all')">📄 Export CSV</a>
+              <a onclick="exportExcel('all')">📊 Export Excel (.xls)</a>
+              <a onclick="window.print()">🖨 Export PDF / Print</a>
+              <div class="sep"></div>
+              <a onclick="exportEvidence()">📸 Evidence Snapshot (JSON)</a>
+            </div>
+          </div>
+          <button class="btn" onclick="openModal('projectModal')">＋ New Project</button>
+        </div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><div class="lbl">🗂 Total Project</div><div class="val" data-count="6">0</div><div class="tag">2 aktif bulan ini</div></div>
+        <div class="kpi"><div class="lbl">📋 Total Task</div><div class="val" data-count="35">0</div><div class="tag">across 6 project</div></div>
+        <div class="kpi"><div class="lbl">✅ Done</div><div class="val" data-count="4">0</div><div class="tag">17% selesai</div></div>
+        <div class="kpi"><div class="lbl">🔄 In Progress</div><div class="val" data-count="4">0</div><div class="tag">sedang jalan</div></div>
+        <div class="kpi"><div class="lbl">🟠 At Risk</div><div class="val" data-count="4" style="color:var(--orange)">0</div><div class="tag">butuh perhatian</div></div>
+        <div class="kpi"><div class="lbl">🔴 Overdue</div><div class="val" data-count="0" style="color:var(--green)">0</div><div class="tag">aman, no overdue</div></div>
+      </div>
+
+      <div class="grid2">
+        <div class="panel">
+          <h3>Progress per Project <span class="mini">weighted by task</span></h3>
+          <div class="pline"><div class="top"><span>P001 · Monitoring PM Excel</span><b>72%</b></div><div class="bar"><i data-w="72"></i></div></div>
+          <div class="pline"><div class="top"><span>P002 · Monitoring PM Web Dashboard</span><b>20%</b></div><div class="bar"><i data-w="20"></i></div></div>
+          <div class="pline"><div class="top"><span>P003 · Otomatisasi Measuring (Trial)</span><b>8%</b></div><div class="bar"><i data-w="8"></i></div></div>
+          <div class="pline"><div class="top"><span>P004 · Otomatisasi Measuring (Dev)</span><b>2%</b></div><div class="bar"><i data-w="2"></i></div></div>
+          <div class="pline"><div class="top"><span>P005 · Dashboard PCB ConMas (Trial)</span><b>4%</b></div><div class="bar"><i data-w="4"></i></div></div>
+          <div class="pline" style="margin-bottom:0"><div class="top"><span>P006 · Dashboard PCB ConMas (Dev)</span><b>1%</b></div><div class="bar"><i data-w="1"></i></div></div>
+        </div>
+        <div class="panel">
+          <h3>Task Status Distribution</h3>
+          <div class="donut-wrap">
+            <svg class="donut" width="150" height="150" viewBox="0 0 42 42">
+              <circle cx="21" cy="21" r="15.9" fill="transparent" stroke="var(--panel2)" stroke-width="5"></circle>
+              <circle cx="21" cy="21" r="15.9" fill="transparent" stroke="#22c55e" stroke-width="5" stroke-dasharray="11 89" stroke-dashoffset="25"></circle>
+              <circle cx="21" cy="21" r="15.9" fill="transparent" stroke="#4f7cff" stroke-width="5" stroke-dasharray="11 89" stroke-dashoffset="14"></circle>
+              <circle cx="21" cy="21" r="15.9" fill="transparent" stroke="#64748b" stroke-width="5" stroke-dasharray="78 22" stroke-dashoffset="3"></circle>
+              <text x="21" y="20.5" text-anchor="middle" fill="var(--txt)" font-size="7" font-weight="bold">35</text>
+              <text x="21" y="26" text-anchor="middle" fill="var(--muted)" font-size="3">tasks</text>
+            </svg>
+            <div class="legend">
+              <div><span class="dot" style="background:#22c55e"></span> Done · 4 <span style="color:var(--faint)">(11%)</span></div>
+              <div><span class="dot" style="background:#4f7cff"></span> In Progress · 4 <span style="color:var(--faint)">(11%)</span></div>
+              <div><span class="dot" style="background:#64748b"></span> Pending · 27 <span style="color:var(--faint)">(78%)</span></div>
+              <div><span class="dot" style="background:#f97316"></span> At Risk · 4</div>
+              <div><span class="dot" style="background:#ef4444"></span> Overdue · 0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>🚨 Task yang perlu perhatian <span class="row"><button class="btn ghost sm" onclick="exportCSV('attention')">⬇ CSV</button></span></h3>
+        <div class="tablewrap"><table id="tbl-attention">
+          <thead><tr><th>Task</th><th>Project</th><th>PIC</th><th>Due</th><th>Progress</th><th>Health</th><th>Next Action</th></tr></thead>
+          <tbody>
+            <tr><td>Develop VBA: laporan monthly & weekly</td><td>P001</td><td><span class="pic"><span class="ava">MU</span>Mu'taz</span></td><td>06 Mei</td><td><span class="mini-bar"><i style="width:50%"></i></span>50%</td><td><span class="badge b-yellow">🟡 Watch</span></td><td>—</td></tr>
+            <tr><td>Meeting internal — request feature baru</td><td>P001</td><td><span class="pic"><span class="ava">MU</span>Mu'taz</span></td><td>06 Mei</td><td><span class="mini-bar"><i style="width:40%"></i></span>40%</td><td><span class="badge b-orange">🟠 At Risk</span></td><td>Siapkan deck request</td></tr>
+            <tr><td>Trial & validasi Excel dengan data real</td><td>P001</td><td><span class="pic"><span class="ava">MU</span>Mu'taz</span></td><td>06 Mei</td><td><span class="mini-bar"><i style="width:30%"></i></span>30%</td><td><span class="badge b-orange">🟠 At Risk</span></td><td>Cek hasil vs data manual</td></tr>
+            <tr><td>Review & sign-off trial Excel ke direktur</td><td>P001</td><td><span class="pic"><span class="ava">MU</span>Mu'taz</span></td><td>06 Mei</td><td><span class="mini-bar"><i style="width:20%"></i></span>20%</td><td><span class="badge b-orange">🟠 At Risk</span></td><td>Presentasi hasil trial</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <!-- ========= PROJECTS ========= -->
+    <section id="projects" class="view">
+      <div class="topbar">
+        <div><h1>Projects</h1><div class="sub">6 project · 35 task total</div></div>
+        <div class="row">
+          <input class="search" placeholder="🔍  Cari project...">
+          <button class="btn ghost" onclick="exportCSV('projects')">⬇ Export</button>
+          <button class="btn" onclick="openModal('projectModal')">＋ New Project</button>
+        </div>
+      </div>
+      <div class="filters">
+        <select><option>Semua Status</option><option>In Progress</option><option>Not Started</option><option>Done</option></select>
+        <select><option>Semua PIC</option><option>Mu'taz</option><option>Triana</option><option>Team IT</option></select>
+        <select><option>Semua Category</option><option>Development</option><option>Trial</option><option>BI</option></select>
+        <select><option>Semua Health</option><option>On Track</option><option>At Risk</option><option>Critical</option></select>
+      </div>
+      <div class="pgrid" id="pgrid"></div>
+    </section>
+
+    <!-- ========= PROJECT DETAIL ========= -->
+    <section id="detail" class="view">
+      <div class="topbar">
+        <div><h1><span style="color:var(--muted);font-weight:400">Projects /</span> Monitoring PM Excel</h1><div class="sub">P001 · Trial · Category: Development</div></div>
+        <div class="row">
+          <button class="btn ghost" onclick="exportCSV('detail')">⬇ Export Tasks</button>
+          <button class="btn" onclick="openModal('taskModal')">＋ New Task</button>
+        </div>
+      </div>
+
+      <div class="dhead">
+        <div>
+          <span class="badge b-blue">In Progress</span> <span class="badge b-green">🟢 On Track</span>
+          <h2>Monitoring PM Excel</h2>
+          <p style="color:var(--muted);margin-top:6px;max-width:600px;line-height:1.5">Trial monitoring project management berbasis Excel + VBA — import data PM, generate laporan per-short, monthly & weekly.</p>
+          <div class="dmeta">
+            <div><span>OWNER / PIC</span><b>Mu'taz</b></div>
+            <div><span>START</span><b>01 Apr 2026</b></div>
+            <div><span>TARGET</span><b>06 Mei 2026</b></div>
+            <div><span>TASK</span><b>4 / 8 done</b></div>
+          </div>
+        </div>
+        <div class="ring" id="detailRing">
+          <div style="width:80px;height:80px;border-radius:50%;background:var(--panel);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:21px">72%</div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <a class="active" onclick="dtab('t-tasks',this)">Tasks</a>
+        <a onclick="dtab('t-kanban',this)">Kanban</a>
+        <a onclick="dtab('t-activity',this)">Activity</a>
+        <a onclick="dtab('t-issues',this)">Issues</a>
+      </div>
+
+      <div id="t-tasks" class="view active">
+        <div class="panel" style="padding:0">
+          <div class="tablewrap"><table id="tbl-detail">
+            <thead><tr><th>Task ID</th><th>Task Name</th><th>Category</th><th>PIC</th><th>Due</th><th>Status</th><th>Progress</th><th>Health</th><th>Kendala</th></tr></thead>
+            <tbody>
+              <tr><td>P001.1</td><td>Analisa kebutuhan data PM</td><td><span class="badge b-gray">Planning</span></td><td><span class="pic"><span class="ava">MU</span>Mu'taz</span></td><td>10 Apr</td><td><span class="badge b-green">✅ Done</span></td><td><span class="mini-bar"><i style="width:100%"></i></span>100%</td><td><span class="badge b-green">🟢</span></td><td>—</td></tr>
+              <tr><td>P001.2</td><td>Desain template Excel (per-short, monthly, weekly)</td><td><span class="badge b-gray">Design</span></td><td><span class="pic"><span class="ava">MU</span>Mu'taz</span></td><td>15 Apr</td><td><span class="badge b-green">✅ Done</span></td><td><span class="mini-bar"><i style="width:100%"></i></span>100%</td><td><span class="badge b-green">🟢</span></td><td>—</td></tr>
+              <tr><td>P001.3</td><td>Develop VBA: import & parsing data PM</td><td><span class="badge b-blue">Dev</span></td><td><span class="pic"><span class="ava">MU</span>Mu'taz</span></td><td>20 Apr</td><td><span class="badge b-green">✅ Done</span></td><td><span class="mini-bar"><i style="width:100%"></i></span>100%</td><td><span class="badge b-green">🟢</span></td><td>Trial done</td></tr>
+              <tr><td>P001.4</td><td>Develop VBA: generate laporan per-short</td><td><span class="badge b-blue">Dev</span></td><td><span class="pic"><span class="ava">MU</span>Mu'taz</span></td><td>25 Apr</td><td><span class="badge b-green">✅ Done</span></td><td><span class="mini-bar"><i style="width:100%"></i></span>100%</td><td><span class="badge b-green">🟢</span></td><td>—</td></tr>
+              <tr><td>P001.5</td><td>Develop VBA: generate laporan monthly & weekly</td><td><span class="badge b-blue">Dev</span></td><td><span class="pic"><span class="ava">MU</span>Mu'taz</span></td><td>06 Mei</td><td><span class="badge b-blue">🔄 In Progress</span></td><td><span class="mini-bar"><i style="width:50%"></i></span>50%</td><td><span class="badge b-yellow">🟡 Watch</span></td><td>—</td></tr>
+              <tr><td>P001.6</td><td>Meeting internal — request feature baru PM</td><td><span class="badge b-gray">Meeting</span></td><td><span class="pic"><span class="ava">MU</span>Mu'taz</span></td><td>06 Mei</td><td><span class="badge b-blue">🔄 In Progress</span></td><td><span class="mini-bar"><i style="width:40%"></i></span>40%</td><td><span class="badge b-orange">🟠 At Risk</span></td><td>Siapkan deck</td></tr>
+              <tr><td>P001.7</td><td>Trial & validasi Excel dengan data real</td><td><span class="badge b-orange">Testing</span></td><td><span class="pic"><span class="ava">MU</span>Mu'taz</span></td><td>06 Mei</td><td><span class="badge b-blue">🔄 In Progress</span></td><td><span class="mini-bar"><i style="width:30%"></i></span>30%</td><td><span class="badge b-orange">🟠 At Risk</span></td><td>Cek vs manual</td></tr>
+              <tr><td>P001.8</td><td>Review & sign-off trial Excel ke direktur</td><td><span class="badge b-blue">Milestone</span></td><td><span class="pic"><span class="ava">MU</span>Mu'taz</span></td><td>06 Mei</td><td><span class="badge b-blue">🔄 In Progress</span></td><td><span class="mini-bar"><i style="width:20%"></i></span>20%</td><td><span class="badge b-orange">🟠 At Risk</span></td><td>Presentasi</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <div id="t-kanban" class="view">
+        <div class="kanban">
+          <div class="kcol"><h4>Not Started <span class="cnt">0</span></h4><div style="color:var(--faint);font-size:12px;text-align:center;padding:24px 0">Kosong</div></div>
+          <div class="kcol"><h4>In Progress <span class="cnt">4</span></h4>
+            <div class="ktask"><div class="t">P001.5 · VBA laporan monthly</div><div class="b"><span class="badge b-yellow">🟡 Watch</span><span class="ava" style="width:23px;height:23px">MU</span></div></div>
+            <div class="ktask"><div class="t">P001.6 · Meeting request feature</div><div class="b"><span class="badge b-orange">🟠 At Risk</span><span class="ava" style="width:23px;height:23px">MU</span></div></div>
+            <div class="ktask"><div class="t">P001.7 · Trial validasi data real</div><div class="b"><span class="badge b-orange">🟠 At Risk</span><span class="ava" style="width:23px;height:23px">MU</span></div></div>
+            <div class="ktask"><div class="t">P001.8 · Sign-off ke direktur</div><div class="b"><span class="badge b-orange">🟠 At Risk</span><span class="ava" style="width:23px;height:23px">MU</span></div></div>
+          </div>
+          <div class="kcol"><h4>Review <span class="cnt">0</span></h4><div style="color:var(--faint);font-size:12px;text-align:center;padding:24px 0">Kosong</div></div>
+          <div class="kcol"><h4>Done <span class="cnt">4</span></h4>
+            <div class="ktask"><div class="t">P001.1 · Analisa kebutuhan data</div><div class="b"><span class="badge b-green">✅ Done</span><span class="ava" style="width:23px;height:23px">MU</span></div></div>
+            <div class="ktask"><div class="t">P001.2 · Desain template Excel</div><div class="b"><span class="badge b-green">✅ Done</span><span class="ava" style="width:23px;height:23px">MU</span></div></div>
+            <div class="ktask"><div class="t">P001.3 · VBA import & parsing</div><div class="b"><span class="badge b-green">✅ Done</span><span class="ava" style="width:23px;height:23px">MU</span></div></div>
+            <div class="ktask"><div class="t">P001.4 · VBA laporan per-short</div><div class="b"><span class="badge b-green">✅ Done</span><span class="ava" style="width:23px;height:23px">MU</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="t-activity" class="view">
+        <div class="panel">
+          <div class="tl">
+            <div class="item"><span class="dotm" style="background:var(--brand)"></span><b>Mu'taz</b> update progress <b>P001.7</b> dari 20% → 30%<div class="ts">Hari ini · 09:12</div></div>
+            <div class="item"><span class="dotm" style="background:var(--green)"></span><b>Mu'taz</b> menyelesaikan task <b>P001.4</b><div class="ts">2 hari lalu · 16:40</div></div>
+            <div class="item"><span class="dotm" style="background:var(--orange)"></span><b>Mu'taz</b> menandai <b>P001.6</b> sebagai At Risk<div class="ts">3 hari lalu · 10:05</div></div>
+            <div class="item"><span class="dotm" style="background:var(--brand)"></span><b>Mu'taz</b> membuat project <b>P001</b><div class="ts">01 Apr 2026</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="t-issues" class="view">
+        <div class="panel" style="padding:0">
+          <div class="tablewrap"><table id="tbl-issues">
+            <thead><tr><th>Issue</th><th>Task</th><th>Severity</th><th>Status</th><th>Next Action</th></tr></thead>
+            <tbody>
+              <tr><td>Data real belum matching dengan hasil manual</td><td>P001.7</td><td><span class="badge b-orange">High</span></td><td><span class="badge b-blue">Open</span></td><td>Cek hasil vs data manual</td></tr>
+              <tr><td>Deck request feature belum siap untuk meeting</td><td>P001.6</td><td><span class="badge b-yellow">Medium</span></td><td><span class="badge b-blue">Open</span></td><td>Siapkan deck request</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========= MY TASKS ========= -->
+    <section id="tasks" class="view">
+      <div class="topbar">
+        <div><h1>My Tasks</h1><div class="sub">Task yang di-assign ke kamu · 8 aktif</div></div>
+        <div class="row"><input class="search" placeholder="🔍  Cari task..."><button class="btn ghost" onclick="exportCSV('mytasks')">⬇ Export</button><button class="btn" onclick="openModal('taskModal')">＋ New Task</button></div>
+      </div>
+      <div class="hp">
+        <span class="chip">🔄 In Progress · 4</span>
+        <span class="chip">🟠 At Risk · 4</span>
+        <span class="chip">✅ Done · 4</span>
+        <span class="chip">📅 Due minggu ini · 4</span>
+      </div>
+      <div class="panel" style="padding:0">
+        <div class="tablewrap"><table id="tbl-mytasks">
+          <thead><tr><th>Task</th><th>Project</th><th>Due</th><th>Priority</th><th>Status</th><th>Progress</th><th>Next Action</th></tr></thead>
+          <tbody>
+            <tr><td>Develop VBA laporan monthly & weekly</td><td><span class="badge b-blue">P001</span></td><td>06 Mei</td><td><span class="badge b-orange">High</span></td><td><span class="badge b-blue">🔄 In Progress</span></td><td><span class="mini-bar"><i style="width:50%"></i></span>50%</td><td>—</td></tr>
+            <tr><td>Meeting internal request feature</td><td><span class="badge b-blue">P001</span></td><td>06 Mei</td><td><span class="badge b-orange">High</span></td><td><span class="badge b-blue">🔄 In Progress</span></td><td><span class="mini-bar"><i style="width:40%"></i></span>40%</td><td>Siapkan deck</td></tr>
+            <tr><td>Trial & validasi Excel data real</td><td><span class="badge b-blue">P001</span></td><td>06 Mei</td><td><span class="badge b-orange">High</span></td><td><span class="badge b-blue">🔄 In Progress</span></td><td><span class="mini-bar"><i style="width:30%"></i></span>30%</td><td>Cek vs manual</td></tr>
+            <tr><td>Desain arsitektur DB (PostgreSQL)</td><td><span class="badge b-purple">P002</span></td><td>—</td><td><span class="badge b-orange">High</span></td><td><span class="badge b-gray">⏳ Pending</span></td><td><span class="mini-bar"><i style="width:0%"></i></span>0%</td><td>Tentukan stack DB</td></tr>
+            <tr><td>Membuat Form Master PCB</td><td><span class="badge b-purple">P005</span></td><td>—</td><td><span class="badge b-orange">High</span></td><td><span class="badge b-gray">⏳ Pending</span></td><td><span class="mini-bar"><i style="width:0%"></i></span>0%</td><td>Mapping field</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <!-- ========= REPORTS / ANALYTICS ========= -->
+    <section id="reports" class="view">
+      <div class="topbar">
+        <div><h1>Reports & Analytics</h1><div class="sub">Analisa data untuk monitoring & evidence</div></div>
+        <div class="row">
+          <select class="search" style="width:auto"><option>Periode: April – Mei 2026</option><option>Q2 2026</option><option>Custom range</option></select>
+          <button class="btn ghost" onclick="exportExcel('all')">⬇ Export Excel</button>
+          <button class="btn" onclick="window.print()">🖨 PDF Report</button>
+        </div>
+      </div>
+
+      <div class="kpis" style="grid-template-columns:repeat(4,1fr)">
+        <div class="kpi"><div class="lbl">📈 Completion Rate</div><div class="val" data-count="17">0</div><div class="tag">4 of 35 tasks</div></div>
+        <div class="kpi"><div class="lbl">⚡ Avg Progress</div><div class="val" data-count="18">0</div><div class="tag">weighted</div></div>
+        <div class="kpi"><div class="lbl">🎯 On-Time Rate</div><div class="val" data-count="100">0</div><div class="tag">no overdue</div></div>
+        <div class="kpi"><div class="lbl">👤 Active PIC</div><div class="val" data-count="3">0</div><div class="tag">Mu'taz, Triana, IT</div></div>
+      </div>
+
+      <div class="grid2">
+        <div class="panel">
+          <h3>Task berdasarkan Category <span class="mini">distribusi beban kerja</span></h3>
+          <div class="pline"><div class="top"><span>Dev</span><b>8</b></div><div class="bar"><i data-w="60"></i></div></div>
+          <div class="pline"><div class="top"><span>Design</span><b>4</b></div><div class="bar"><i data-w="30"></i></div></div>
+          <div class="pline"><div class="top"><span>Testing</span><b>5</b></div><div class="bar"><i data-w="38"></i></div></div>
+          <div class="pline"><div class="top"><span>Planning</span><b>6</b></div><div class="bar"><i data-w="45"></i></div></div>
+          <div class="pline" style="margin-bottom:0"><div class="top"><span>Meeting / Milestone</span><b>12</b></div><div class="bar"><i data-w="88"></i></div></div>
+        </div>
+        <div class="panel">
+          <h3>Health Overview</h3>
+          <div class="donut-wrap">
+            <svg class="donut" width="150" height="150" viewBox="0 0 42 42">
+              <circle cx="21" cy="21" r="15.9" fill="transparent" stroke="var(--panel2)" stroke-width="5"></circle>
+              <circle cx="21" cy="21" r="15.9" fill="transparent" stroke="#22c55e" stroke-width="5" stroke-dasharray="45 55" stroke-dashoffset="25"></circle>
+              <circle cx="21" cy="21" r="15.9" fill="transparent" stroke="#eab308" stroke-width="5" stroke-dasharray="12 88" stroke-dashoffset="80"></circle>
+              <circle cx="21" cy="21" r="15.9" fill="transparent" stroke="#f97316" stroke-width="5" stroke-dasharray="43 57" stroke-dashoffset="68"></circle>
+              <text x="21" y="23" text-anchor="middle" fill="var(--txt)" font-size="6" font-weight="bold">6</text>
+            </svg>
+            <div class="legend">
+              <div><span class="dot" style="background:#22c55e"></span> On Track · 1</div>
+              <div><span class="dot" style="background:#eab308"></span> Watch · 1</div>
+              <div><span class="dot" style="background:#f97316"></span> At Risk · 4</div>
+              <div><span class="dot" style="background:#ef4444"></span> Critical · 0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>📋 Ringkasan per Project <span class="row"><button class="btn ghost sm" onclick="exportCSV('projects')">⬇ CSV</button><button class="btn ghost sm" onclick="exportExcel('projects')">⬇ Excel</button></span></h3>
+        <div class="tablewrap"><table id="tbl-report">
+          <thead><tr><th>Code</th><th>Project</th><th>Category</th><th>PIC</th><th>Tasks</th><th>Done</th><th>Progress</th><th>Health</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>P001</td><td>Monitoring PM Excel</td><td>Trial</td><td>Mu'taz</td><td>8</td><td>4</td><td>72%</td><td><span class="badge b-green">On Track</span></td><td><span class="badge b-blue">In Progress</span></td></tr>
+            <tr><td>P002</td><td>Monitoring PM Web Dashboard</td><td>Dev</td><td>Mu'taz</td><td>4</td><td>0</td><td>20%</td><td><span class="badge b-red">Critical</span></td><td><span class="badge b-blue">In Progress</span></td></tr>
+            <tr><td>P003</td><td>Otomatisasi Measuring</td><td>Trial</td><td>Mu'taz</td><td>9</td><td>0</td><td>8%</td><td><span class="badge b-red">Critical</span></td><td><span class="badge b-gray">Pending</span></td></tr>
+            <tr><td>P004</td><td>Otomatisasi Measuring</td><td>Dev</td><td>Mu'taz</td><td>4</td><td>0</td><td>2%</td><td><span class="badge b-red">Critical</span></td><td><span class="badge b-gray">Pending</span></td></tr>
+            <tr><td>P005</td><td>Dashboard PCB ConMas</td><td>Trial</td><td>Triana, Mu'taz</td><td>9</td><td>0</td><td>4%</td><td><span class="badge b-red">Critical</span></td><td><span class="badge b-gray">Pending</span></td></tr>
+            <tr><td>P006</td><td>Dashboard PCB ConMas</td><td>Dev</td><td>Team IT</td><td>1</td><td>0</td><td>1%</td><td><span class="badge b-red">Critical</span></td><td><span class="badge b-gray">Pending</span></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- MODAL: NEW PROJECT -->
+<div class="modal-bg" id="projectModal">
+  <div class="modal">
+    <h3>➕ New Project</h3>
+    <div class="note">💡 Field seperti <b>Health</b>, <b>Overdue</b> & <b>Overall Progress</b> dihitung otomatis oleh sistem — kamu cukup isi yang penting aja.</div>
+    <div class="field"><label>Project Name <span class="req">*</span></label><input placeholder="cth: Monitoring PM Web Dashboard"></div>
+    <div class="f2">
+      <div class="field"><label>Project Code</label><input value="P007" disabled style="opacity:.6"></div>
+      <div class="field"><label>Category</label><select><option>Development</option><option>Trial</option><option>BI / Reporting</option></select></div>
+    </div>
+    <div class="f2">
+      <div class="field"><label>Owner / PIC <span class="req">*</span></label><select><option>Mu'taz</option><option>Triana</option><option>Team IT</option></select></div>
+      <div class="field"><label>Priority</label><select><option>Medium</option><option>High</option><option>Low</option><option>Critical</option></select></div>
+    </div>
+    <div class="f2">
+      <div class="field"><label>Start Date</label><input type="date"></div>
+      <div class="field"><label>Target Date</label><input type="date"></div>
+    </div>
+    <div class="field"><label>Description</label><textarea rows="3" placeholder="Deskripsi singkat project..."></textarea></div>
+    <div class="modal-foot"><button class="btn ghost" onclick="closeModal('projectModal')">Batal</button><button class="btn" onclick="closeModal('projectModal');toast('Project tersimpan ✓')">Simpan Project</button></div>
+  </div>
+</div>
+
+<!-- MODAL: NEW TASK -->
+<div class="modal-bg" id="taskModal">
+  <div class="modal">
+    <h3>➕ New Task</h3>
+    <div class="field"><label>Task Name <span class="req">*</span></label><input placeholder="cth: Develop VBA generate laporan"></div>
+    <div class="f2">
+      <div class="field"><label>Project <span class="req">*</span></label><select><option>P001 · Monitoring PM Excel</option><option>P002 · Monitoring PM Web</option></select></div>
+      <div class="field"><label>Category</label><select><option>Dev</option><option>Design</option><option>Testing</option><option>Meeting</option><option>Milestone</option></select></div>
+    </div>
+    <div class="f2">
+      <div class="field"><label>PIC <span class="req">*</span></label><select><option>Mu'taz</option><option>Triana</option></select></div>
+      <div class="field"><label>Priority</label><select><option>High</option><option>Medium</option><option>Low</option></select></div>
+    </div>
+    <div class="f2">
+      <div class="field"><label>Start Date</label><input type="date"></div>
+      <div class="field"><label>Due Date</label><input type="date"></div>
+    </div>
+    <div class="f2">
+      <div class="field"><label>Status</label><select><option>Not Started</option><option>In Progress</option><option>Done</option></select></div>
+      <div class="field"><label>Progress (%)</label><input type="number" placeholder="0" min="0" max="100"></div>
+    </div>
+    <div class="field"><label>Kendala</label><input placeholder="Masalah saat ini (opsional)"></div>
+    <div class="field"><label>Next Action</label><input placeholder="Tindakan selanjutnya (opsional)"></div>
+    <div class="modal-foot"><button class="btn ghost" onclick="closeModal('taskModal')">Batal</button><button class="btn" onclick="closeModal('taskModal');toast('Task tersimpan ✓')">Simpan Task</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✅ <span id="toastMsg">Tersimpan</span></div>
+
+<script>
+  /* ===== DATA ===== */
+  const PROJECTS = [
+    {code:'P001',name:'Monitoring PM Excel',type:'TRIAL',pic:"Mu'taz",prog:72,done:4,total:8,status:'In Progress',health:'On Track',hb:'b-green'},
+    {code:'P002',name:'Monitoring PM Web Dashboard',type:'DEV',pic:"Mu'taz",prog:20,done:0,total:4,status:'In Progress',health:'Critical',hb:'b-red'},
+    {code:'P003',name:'Otomatisasi Measuring',type:'TRIAL',pic:"Mu'taz",prog:8,done:0,total:9,status:'Pending',health:'Critical',hb:'b-red'},
+    {code:'P004',name:'Otomatisasi Measuring',type:'DEV',pic:"Mu'taz",prog:2,done:0,total:4,status:'Pending',health:'Critical',hb:'b-red'},
+    {code:'P005',name:'Dashboard PCB ConMas',type:'TRIAL',pic:"Triana, Mu'taz",prog:4,done:0,total:9,status:'Pending',health:'Critical',hb:'b-red'},
+    {code:'P006',name:'Dashboard PCB ConMas',type:'DEV',pic:'Team IT',prog:1,done:0,total:1,status:'Pending',health:'Critical',hb:'b-red'},
+  ];
+  const stBadge = s => s==='In Progress'?'b-blue':s==='Done'?'b-green':'b-gray';
+
+  /* render project cards */
+  document.getElementById('pgrid').innerHTML = PROJECTS.map((p,i)=>`
+    <div class="pcard" style="animation-delay:${i*.05}s" onclick="go('detail')">
+      <div class="code">${p.code} · ${p.type}</div>
+      <div class="name">${p.name}</div>
+      <div class="bar"><i data-w="${p.prog<3?3:p.prog}"></i></div>
+      <div class="meta"><span>👤 ${p.pic}</span><span class="badge ${stBadge(p.status)}">${p.status}</span></div>
+      <div class="meta"><span>🎯 ${p.prog}% · ${p.done}/${p.total} task</span><span class="badge ${p.hb}">${p.health}</span></div>
+    </div>`).join('');
+
+  /* ===== NAV ===== */
+  function go(id, el){
+    document.querySelectorAll('.main > .view').forEach(v=>v.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.nav a').forEach(a=>a.classList.remove('active'));
+    if(el && el.classList.contains('nav')||el&&el.closest('.nav')) el.classList.add('active');
+    else{
+      const map={dashboard:0,projects:1,detail:2,tasks:3,reports:4};
+      const links=document.querySelectorAll('.nav a');
+      if(el&&el.parentElement.classList.contains('nav')) el.classList.add('active');
+      else if(map[id]!==undefined) links[map[id]].classList.add('active');
+    }
+    window.scrollTo(0,0);
+    animateBars();
+  }
+  function dtab(id, el){
+    document.querySelectorAll('#detail .tabs a').forEach(a=>a.classList.remove('active'));
+    el.classList.add('active');
+    ['t-tasks','t-kanban','t-activity','t-issues'].forEach(t=>document.getElementById(t).classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+  function openModal(id){document.getElementById(id).classList.add('show')}
+  function closeModal(id){document.getElementById(id).classList.remove('show')}
+  document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')}));
+  function toggleDD(id){const d=document.getElementById(id);d.classList.toggle('open');event.stopPropagation()}
+  document.addEventListener('click',()=>document.querySelectorAll('.dd').forEach(d=>d.classList.remove('open')));
+
+  /* ===== ANIMATIONS ===== */
+  function animateBars(){
+    document.querySelectorAll('.view.active .bar > i[data-w]').forEach(el=>{
+      el.style.width='0'; requestAnimationFrame(()=>{setTimeout(()=>el.style.width=el.dataset.w+'%',50)});
+    });
+  }
+  function runCount(){
+    document.querySelectorAll('.view.active .val[data-count]').forEach(el=>{
+      const target=+el.dataset.count; const dur=850; const start=performance.now();
+      function tick(now){const p=Math.min(1,(now-start)/dur);el.textContent=Math.round(target*p);if(p<1)requestAnimationFrame(tick)}
+      requestAnimationFrame(tick);
+    });
+  }
+
+  /* ===== THEME ===== */
+  function toggleTheme(){document.body.classList.toggle('light');toast(document.body.classList.contains('light')?'Light mode ☀':'Dark mode 🌙')}
+
+  /* ===== TOAST ===== */
+  let toastT;
+  function toast(msg){const t=document.getElementById('toast');document.getElementById('toastMsg').textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2600)}
+
+  /* ===== EXPORT ENGINE ===== */
+  function tableToMatrix(tbl){
+    const rows=[...tbl.querySelectorAll('tr')];
+    return rows.map(r=>[...r.children].map(c=>c.innerText.replace(/\s+/g,' ').trim()));
+  }
+  const DATASETS = {
+    projects:()=>[['Code','Project','Type','PIC','Progress','Done','Total','Status','Health'],
+      ...PROJECTS.map(p=>[p.code,p.name,p.type,p.pic,p.prog+'%',p.done,p.total,p.status,p.health])],
+    attention:()=>tableToMatrix(document.getElementById('tbl-attention')),
+    detail:()=>tableToMatrix(document.getElementById('tbl-detail')),
+    mytasks:()=>tableToMatrix(document.getElementById('tbl-mytasks')),
+    all:()=>[['Code','Project','Type','PIC','Progress','Done','Total','Status','Health'],
+      ...PROJECTS.map(p=>[p.code,p.name,p.type,p.pic,p.prog+'%',p.done,p.total,p.status,p.health])],
+  };
+  function getData(key){return (DATASETS[key]||DATASETS.all)()}
+  function stamp(){const d=new Date();return d.toISOString().slice(0,10)}
+
+  function exportCSV(key){
+    const data=getData(key);
+    const csv=data.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+    download('\ufeff'+csv,`ProjectHub_${key}_${stamp()}.csv`,'text/csv;charset=utf-8;');
+    toast('CSV di-export ✓');
+  }
+  function exportExcel(key){
+    const data=getData(key);
+    let html='<table border="1"><thead><tr>'+data[0].map(h=>`<th style="background:#4f7cff;color:#fff">${h}</th>`).join('')+'</tr></thead><tbody>';
+    html+=data.slice(1).map(r=>'<tr>'+r.map(c=>`<td>${c}</td>`).join('')+'</tr>').join('');
+    html+='</tbody></table>';
+    const doc=`<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"></head><body>${html}</body></html>`;
+    download(doc,`ProjectHub_${key}_${stamp()}.xls`,'application/vnd.ms-excel');
+    toast('Excel di-export ✓');
+  }
+  function exportEvidence(){
+    const payload={
+      generated_at:new Date().toISOString(),
+      generated_by:"Hanif Mu'taz",
+      summary:{total_project:6,total_task:35,done:4,in_progress:4,at_risk:4,overdue:0,overall_progress:'17%'},
+      projects:PROJECTS
+    };
+    download(JSON.stringify(payload,null,2),`ProjectHub_Evidence_${stamp()}.json`,'application/json');
+    toast('Evidence snapshot di-export ✓');
+  }
+  function download(content,filename,mime){
+    const blob=new Blob([content],{type:mime});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();
+    document.body.removeChild(a);URL.revokeObjectURL(url);
+  }
+
+  /* ===== TABLE SORT ===== */
+  document.querySelectorAll('table').forEach(tbl=>{
+    tbl.querySelectorAll('th').forEach((th,i)=>{
+      th.addEventListener('click',()=>{
+        const tb=tbl.querySelector('tbody'); if(!tb)return;
+        const rows=[...tb.rows];
+        const asc=th.dataset.asc!=='1'; th.dataset.asc=asc?'1':'0';
+        rows.sort((a,b)=>{
+          const x=a.cells[i].innerText.trim(), y=b.cells[i].innerText.trim();
+          const nx=parseFloat(x.replace('%','')), ny=parseFloat(y.replace('%',''));
+          if(!isNaN(nx)&&!isNaN(ny))return asc?nx-ny:ny-nx;
+          return asc?x.localeCompare(y):y.localeCompare(x);
+        });
+        rows.forEach(r=>tb.appendChild(r));
+      });
+    });
+  });
+
+  /* ===== INIT ===== */
+  window.addEventListener('load',()=>{animateBars();runCount()});
+</script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+// Calm line icons (Lucide-style).
+const PATHS = {
+  grid: <><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></>,
+  folder: <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>,
+  'check-sq': <><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12l3 3 5-6"/></>,
+  alert: <><path d="M12 3l9 16H3z"/><path d="M12 10v4"/><circle cx="12" cy="17" r=".6" fill="currentColor" stroke="none"/></>,
+  chart: <path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>,
+  doc: <><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></>,
+  archive: <><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M10 12h4"/></>,
+  bell: <><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></>,
+  plus: <path d="M12 5v14M5 12h14"/>,
+  download: <><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></>,
+  edit: <><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></>,
+  trash: <><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></>,
+  user: <><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></>,
+  target: <><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></>,
+  clock: <><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></>,
+  flag: <path d="M5 21V4M5 4h11l-2 4 2 4H5"/>,
+  shield: <path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>,
+  layers: <><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></>,
+  flow: <><path d="M6 3v6M6 15v6M18 3v6M18 15v6"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="12" r="2.5"/><path d="M8.5 12h7"/></>,
+  menu: <path d="M3 6h18M3 12h18M3 18h18"/>,
+  check: <path d="M20 6L9 17l-5-5"/>,
+  x: <path d="M18 6L6 18M6 6l12 12"/>,
+  send: <path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/>,
+  moon: <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>,
+  trend: <><path d="M3 17l6-6 4 4 7-8"/><path d="M17 7h4v4"/></>,
+  fileup: <><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 18v-6M9 15l3-3 3 3"/></>,
+  gavel: <path d="M14 13l-7 7M12 8l4 4M16 4l4 4-3 3-4-4zM3 21h7"/>,
+  inbox: <><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5 5h14l3 7v5a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-5z"/></>,
+  logout: <><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></>,
+};
+export default function Icon({ name, size = 'sm' }) {
+  return <svg className={`i ${size}`} viewBox="0 0 24 24" aria-hidden="true">{PATHS[name] || PATHS.grid}</svg>;
+}
