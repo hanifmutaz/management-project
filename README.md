@@ -1,106 +1,79 @@
-# 🗂 ProjectHub — Full-Stack
-### Project Management, Monitoring & Reporting Platform
-> **Update once. Track everything. Report instantly.** — *Every project update becomes evidence.*
+# ⌘ MUTAZ OS
+### Personal Work Operating System
+> Catat semua yang lu kerjain — kantor, freelance, part-time, personal. Jam, task, income kerecord otomatis.
 
-Satu paket lengkap: **Frontend (React)** ↔ **Backend (Express)** ↔ **Database (PostgreSQL)**.
-FE sekarang **beneran nyambung ke PostgreSQL** lewat REST API (bukan localStorage).
-Single source of truth = database.
-
----
-
-## 📁 Struktur
-```
-projecthub/
-├── database/
-│   ├── schema.sql      # tabel, enum, views, HEALTH ENGINE, triggers (audit, notif, approval)
-│   └── seed.sql        # data contoh (users, P001/P002/P005, dst)
-├── backend/            # Node.js + Express + JWT
-│   └── src/
-│       ├── server.js  db.js
-│       ├── middleware/auth.js
-│       └── routes/  auth · projects · entities · dashboard · evidence · approvals · notifications
-└── frontend/           # React + Vite (nyambung ke /api)
-    └── src/
-        ├── lib/  api.js (⭐ semua fetch ke backend) · store.jsx (cache+orchestrate) · format.js
-        ├── components/  Icon · ui · Modal · Layout · Login
-        ├── modals/Forms.jsx
-        └── pages/  Overview · Projects · ProjectDetail · MyTasks · IssuesRisks · Approvals · Analytics · Reports · Evidence
-```
+Personal work tracker buat 1 orang (lu), **no login**, jalan di laptop.
+Stack: **PostgreSQL + Express + React (Vite)**.
 
 ---
 
-## 🚀 Cara jalanin (urut: DB → BE → FE)
-
-### 1. Database
+## 🚀 Jalanin (urut: DB → BE → FE)
 ```bash
-createdb -U postgres projecthub
-psql -U postgres -d projecthub -f database/schema.sql
-psql -U postgres -d projecthub -f database/seed.sql
-```
-> Error `database "projecthub" does not exist`? Berarti `createdb` belum jalan.
+# 1. Database
+createdb -U postgres mutaz_os
+psql -U postgres -d mutaz_os -f database/schema.sql
+psql -U postgres -d mutaz_os -f database/seed.sql
 
-### 2. Backend
-```bash
-cd backend
-cp .env.example .env         # isi DATABASE_URL & JWT_SECRET
-npm install
-npm run dev                  # http://localhost:4000
-```
+# 2. Backend
+cd backend && cp .env.example .env   # isi DATABASE_URL
+npm install && npm run dev           # http://localhost:4000
 
-### 3. Frontend
-```bash
-cd frontend
-npm install
-npm run dev                  # http://localhost:5173
+# 3. Frontend
+cd frontend && npm install && npm run dev   # http://localhost:5173
 ```
-Vite otomatis **proxy `/api` → http://localhost:4000** (lihat vite.config.js).
-
-### Login
-Buka http://localhost:5173 → login pakai seed:
-```
-Email    : hanif.mutaz@hirose-gl.com
-Password : password123
-```
-> ⚠️ Ganti password_hash di seed sebelum production.
+Buka `localhost:5173` — langsung masuk, **tanpa login**. (Shortcut: dari `backend`, `npm run db:init`.)
 
 ---
 
-## 🔌 Bagaimana FE ↔ BE nyambung
-- **Semua data lewat `frontend/src/lib/api.js`** → `fetch('/api/...')` dengan header `Authorization: Bearer <JWT>`.
-- **`store.jsx` bukan penyimpan data** — dia cache + orchestrator: tiap aksi (create/update/delete) panggil API, lalu **refetch** dari DB, lalu re-render.
-- Health, audit trail, progress history, notifikasi, approval → **semua dihitung di PostgreSQL** (view + trigger). FE cuma menampilkan.
+## ✨ Yang di-upgrade di UI/UX (vs WorkTracker)
 
-Jadi kalau buka dari 2 browser/laptop, datanya **sama** (dari DB), bukan kepisah di masing-masing browser.
+| Fitur | Detail |
+|---|---|
+| **⌘ Command Palette** | Tekan **Ctrl/Cmd + K** — cari aksi, halaman, project. Ala Linear/Raycast. |
+| **⚡ Quick Log Bar** | Di Dashboard: ketik apa yang dikerjain → **Enter** langsung tercatat. Aksi tersering jadi 1 detik. |
+| **⌨️ Keyboard Shortcuts** | `g d/p/t/w/f/a` navigasi cepat · `n` catat kerjaan · `Ctrl+K` palette · `Esc` tutup |
+| **🔥 Streak** | "5 hari beruntun" — motivasi konsistensi (dihitung di DB). |
+| **📈 KPI Delta** | Jam minggu ini nampilin **+/-% vs minggu lalu**, bukan angka telanjang. |
+| **👋 Greeting** | "Selamat pagi/siang/sore/malam, Mu'taz" — personal, time-aware. |
+| **💀 Skeleton Loading** | Bukan spinner polos — layout ghost biar ga "kedip". |
+| **📌 Pin Project** | Pin project penting ke atas. |
+| **🎨 Color Swatch Picker** | Pilih warna project dari palet (bukan color input jelek). |
+| **📊 Progress bar** di card | Card project nampilin % task selesai. |
+| **✨ Empty state ber-CTA** | Kosong → langsung ada tombol aksi, ga cuma teks. |
+| **📱 FAB mobile** | Tombol floating "catat kerjaan" di mobile. |
+| **🌗 Dark/Light** | Toggle, tersimpan. Palet warna direfine (lebih deep & kontras). |
 
 ---
 
-## ✨ Fitur
-- **CRUD penuh** (Project, Task, Milestone, Deliverable, Issue, Risk, Action, Decision) — create/edit/delete + validasi + konfirmasi.
-- **Health Engine** rule-based di DB (`fn_compute_project_health`) → health **+ alasan**, auto-refresh tiap perubahan.
-- **Notifications** 🔔 — trigger DB kirim notif (task overdue, critical issue, approval).
-- **Approval Workflow** ⚖️ — request → approve/reject; milestone approved auto-Done; tercatat di evidence.
-- **Evidence Center** — view `v_evidence` gabungkan progress/issue/risk/decision/approval, traceable.
-- **Reports & Analytics**, **Export** (CSV/Excel/JSON), **Login/JWT**, **dark/light**, **responsive**.
+## 🧩 Halaman
+- **Dashboard** — greeting, streak, quick-log bar, KPI (jam hari ini/minggu + delta, task, income), chart 14 hari (hari ini di-highlight), jam per konteks, kerjaan terakhir, due minggu ini, project mangkrak, tagihan belum dibayar
+- **Projects** — card (warna, pin, progress %, jam, income, staleness), filter segmented
+- **Project Detail** — tabs: Tasks (klik-toggle), Work Log, Payments, Notes
+- **Tasks** — grouped Doing/Todo/Done, quick-toggle
+- **Work Log** ⭐ — timeline per hari + total jam, export CSV
+- **Finance** — income, unpaid, tandai lunas 1-klik, export
+- **Analytics** — jam per konteks, income per bulan, top project
 
 ---
 
-## 🔐 REST API (ringkas)
+## 🗄 Data model (4 tabel)
+`projects` · `tasks` · `work_logs` (⭐ jantung) · `payments`
++ views (summary, dashboard, hours-by-day/type) + `fn_streak()` + trigger (last_activity, done_at).
+
+## 🔌 API (no auth)
 ```
-POST   /api/auth/login
-GET    /api/auth/users
-GET    /api/dashboard
-GET    /api/projects            GET /api/projects/:id     POST/PUT/DELETE /api/projects[/:id]
-POST/PUT/DELETE /api/tasks|milestones|deliverables|issues|risks|actions|decisions[/:id]
-GET    /api/evidence?project_id=&etype=&user=
-GET    /api/approvals?status=   POST /api/approvals   PATCH /api/approvals/:id/decide
-GET    /api/notifications       PATCH /api/notifications/:id/read   PATCH /api/notifications/read-all
+GET  /api/dashboard   /api/dashboard/analytics
+CRUD /api/projects[/:id]   PATCH /:id/pin
+CRUD /api/tasks[/:id]      PATCH /:id/status
+CRUD /api/worklogs[/:id]
+CRUD /api/payments[/:id]   PATCH /:id/paid
 ```
 
 ---
 
-## ✅ Catatan (tahap developer, belum production-hardened)
-- Sudah divalidasi: semua JSX parse & transpile clean, semua import resolve.
-- Belum ada: unit test, refresh-token, rate-limit, file upload, websocket real-time.
-- `bcrypt` hash di seed = `password123`. Ganti untuk semua user sebelum dipakai beneran.
+## ✅ Catatan
+- Divalidasi: 19 file JSX parse+transpile clean, semua import resolve, backend clean.
+- **No auth by design** — jangan host public tanpa proteksi (data income kebuka).
+- Belum ada: timer live start/stop, PWA/offline. By design tahap ini.
 
-Dibuat untuk Hanif Mu'taz · Kaizen Section
+Dibuat buat Hanif Mu'taz · personal use

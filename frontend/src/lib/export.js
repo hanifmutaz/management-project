@@ -1,5 +1,4 @@
-// Export client-side sederhana. Untuk report .xlsx 7-sheet gunakan endpoint backend.
-import { healthLabel, statusLabel, num } from './format.js';
+import { fmtDateFull } from './format.js';
 
 function save(content, filename, mime) {
   const b = new Blob([content], { type: mime });
@@ -8,16 +7,17 @@ function save(content, filename, mime) {
   a.href = u; a.download = filename; a.click();
   URL.revokeObjectURL(u);
 }
-export function exportPortfolio(projects, fmt = 'csv', scope = 'portfolio') {
-  const rows = [['Code', 'Project', 'Owner', 'Progress', 'Health', 'Status'],
-    ...projects.map(p => [p.project_code, p.name, p.owner, num(p.avg_progress) + '%', healthLabel[p.health] || p.health, statusLabel(p.status)])];
-  if (fmt === 'csv') {
-    save('\ufeff' + rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n'), `ProjectHub_${scope}.csv`, 'text/csv');
-  } else if (fmt === 'json') {
-    save(JSON.stringify({ generated_at: new Date().toISOString(), scope, projects }, null, 2), `ProjectHub_${scope}.json`, 'application/json');
-  } else {
-    const th = rows[0].map(x => `<th style="background:#2F55D4;color:#fff">${x}</th>`).join('');
-    const body = rows.slice(1).map(r => '<tr>' + r.map(c => `<td>${c}</td>`).join('') + '</tr>').join('');
-    save(`<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="utf-8"></head><body><h3>ProjectHub — ${scope}</h3><table border="1"><thead><tr>${th}</tr></thead><tbody>${body}</tbody></table></body></html>`, `ProjectHub_${scope}.xls`, 'application/vnd.ms-excel');
-  }
+const csvRow = (arr) => arr.map(c => `"${String(c ?? '').replace(/"/g, '""')}"`).join(',');
+
+export function exportWorkLog(logs) {
+  const head = ['Tanggal', 'Project', 'Type', 'Task', 'Deskripsi', 'Jam', 'Billable'];
+  const rows = logs.map(l => [fmtDateFull(l.log_date), l.project_name, l.project_type, l.task_title || '', l.description, l.hours, l.billable ? 'Ya' : '']);
+  const total = logs.reduce((a, l) => a + Number(l.hours), 0);
+  rows.push(['', '', '', '', 'TOTAL', total, '']);
+  save('\ufeff' + [csvRow(head), ...rows.map(csvRow)].join('\n'), `MutazOS_WorkLog_${new Date().toISOString().slice(0,10)}.csv`, 'text/csv');
+}
+export function exportPayments(payments) {
+  const head = ['Project', 'Client', 'Label', 'Jumlah', 'Currency', 'Status', 'Invoice', 'Dibayar'];
+  const rows = payments.map(p => [p.project_name, p.client_name || '', p.label || '', p.amount, p.currency, p.status, p.invoice_date || '', p.paid_date || '']);
+  save('\ufeff' + [csvRow(head), ...rows.map(csvRow)].join('\n'), `MutazOS_Payments_${new Date().toISOString().slice(0,10)}.csv`, 'text/csv');
 }
