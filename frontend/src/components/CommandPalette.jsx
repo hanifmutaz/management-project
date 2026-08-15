@@ -4,6 +4,7 @@ import Icon from './Icon.jsx';
 import { useStore } from '../lib/store.jsx';
 import { useModal } from './Modal.jsx';
 import { WorkLogForm, ProjectForm, TaskForm } from '../modals/Forms.jsx';
+import { typeLabel } from '../lib/format.js';
 
 // Command Palette (Cmd/Ctrl+K) — navigasi + aksi cepat, khas "OS".
 export default function CommandPalette({ onClose }) {
@@ -31,7 +32,7 @@ export default function CommandPalette({ onClose }) {
       { group:'Navigasi', icon:'chart', label:'Analytics', sub:'g a', run:() => go('/analytics') },
       { group:'Tampilan', icon:'moon', label:'Toggle Dark / Light', run:() => act(() => { document.body.classList.toggle('light'); localStorage.setItem('mos_theme', document.body.classList.contains('light') ? 'light' : 'dark'); }) },
     ];
-    const projItems = projects.map(p => ({ group:'Buka Project', icon:'folder', label:p.name, sub:p.type, color:p.color, run:() => go('/projects/' + p.id) }));
+    const projItems = projects.map(p => ({ group:'Buka Project', icon:'folder', label:p.name, sub:typeLabel[p.type] || p.type, color:p.color, run:() => go('/projects/' + p.id) }));
     const all = [...base, ...projItems];
     if (!q.trim()) return all;
     const ql = q.toLowerCase();

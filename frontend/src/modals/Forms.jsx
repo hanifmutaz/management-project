@@ -38,7 +38,7 @@ function Foot({ onDelete, onSave, busy }) {
 }
 
 /* ---------- PROJECT ---------- */
-export function ProjectForm({ edit }) {
+export function ProjectForm({ edit, onDone }) {
   const { createProject, updateProject, deleteProject } = useStore();
   const { open, close } = useModal();
   const [f, setF] = useState(edit ? {
@@ -54,15 +54,16 @@ export function ProjectForm({ edit }) {
     setT(true); if (!f.name.trim()) return; setBusy(true);
     const data = { ...f, rate: +f.rate || 0, tags: parseTags(f.tags),
       rate_type: isPaid ? f.rate_type : 'none', start_date: f.start_date || null, due_date: f.due_date || null };
-    try { edit ? await updateProject(edit.id, data) : await createProject(data); close(); }
+    try { edit ? await updateProject(edit.id, data) : await createProject(data); onDone && await onDone(); close(); }
     catch { setBusy(false); }
   };
+  const del = async () => { await deleteProject(edit.id); onDone && await onDone(); close(); };
   return (
     <>
       <h3><Icon name="folder" /> {edit ? 'Edit' : 'Project Baru'}</h3>
       <Field label="Nama Project" req><input className={t && !f.name.trim() ? 'err' : ''} value={f.name} onChange={set('name')} placeholder="cth: Landing Page UMKM" autoFocus /></Field>
       <div className="f2">
-        <Field label="Type"><select value={f.type} onChange={set('type')}><option value="office">Kantor</option><option value="freelance">Freelance</option><option value="parttime">Part-time</option><option value="personal">Personal</option></select></Field>
+        <Field label="Type"><select value={f.type} onChange={set('type')}><option value="office">Kantor</option><option value="freelance">Freelance</option><option value="parttime">Part-time</option><option value="kuliah">Kuliah</option><option value="personal">Personal</option></select></Field>
         <Field label="Status"><select value={f.status} onChange={set('status')}><option value="active">Active</option><option value="on_hold">On Hold</option><option value="done">Done</option><option value="archived">Archived</option></select></Field>
       </div>
       {isPaid && (
@@ -85,7 +86,7 @@ export function ProjectForm({ edit }) {
       </Field>
       <Field label="Tags (pisah koma)"><input value={f.tags} onChange={set('tags')} placeholder="react, web" /></Field>
       <Field label="Catatan / Notes"><textarea rows="2" value={f.notes} onChange={set('notes')} placeholder="Catatan bebas, keputusan, dll..." /></Field>
-      <Foot busy={busy} onSave={save} onDelete={edit ? () => open(<Confirm message={`Hapus project "${edit.name}" beserta semua task/log/payment-nya?`} onYes={() => deleteProject(edit.id)} />) : null} />
+      <Foot busy={busy} onSave={save} onDelete={edit ? () => open(<Confirm message={`Hapus project "${edit.name}" beserta semua task/log/payment-nya?`} onYes={del} />) : null} />
     </>
   );
 }

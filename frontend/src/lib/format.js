@@ -1,10 +1,11 @@
-export const typeLabel = { office:'Kantor', freelance:'Freelance', parttime:'Part-time', personal:'Personal' };
-export const typeClass = { office:'b-blue', freelance:'b-green', parttime:'b-purple', personal:'b-yellow' };
-export const typeColor = { office:'#5b8cff', freelance:'#34d399', parttime:'#9b6bff', personal:'#fbbf24' };
-export const typeIcon = { office:'briefcase', freelance:'wallet', parttime:'clock', personal:'user' };
+export const typeLabel = { office:'Kantor', freelance:'Freelance', parttime:'Part-time', personal:'Personal', kuliah:'Kuliah' };
+export const typeClass = { office:'b-blue', freelance:'b-green', parttime:'b-purple', personal:'b-yellow', kuliah:'b-cyan' };
+export const typeColor = { office:'#5b8cff', freelance:'#34d399', parttime:'#9b6bff', personal:'#fbbf24', kuliah:'#22d3ee' };
+export const typeIcon = { office:'briefcase', freelance:'wallet', parttime:'clock', personal:'user', kuliah:'book' };
 
 export const projStatusLabel = { active:'Active', on_hold:'On Hold', done:'Done', archived:'Archived' };
 export const projStatusClass = { active:'b-green', on_hold:'b-yellow', done:'b-blue', archived:'b-gray' };
+export const projStatusColor = { active:'var(--green)', on_hold:'var(--yellow)', done:'var(--brand)', archived:'var(--faint)' };
 
 export const taskLabel = { todo:'To Do', doing:'Doing', done:'Done' };
 export const taskClass = { todo:'b-gray', doing:'b-blue', done:'b-green' };
@@ -22,8 +23,9 @@ export function money(v, cur = 'IDR') {
   if (cur === 'IDR') return 'Rp' + n.toLocaleString('id-ID');
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: cur }).format(n);
 }
-export function moneyShort(v) {
+export function moneyShort(v, cur = 'IDR') {
   const n = Number(v) || 0;
+  if (cur !== 'IDR') return money(n, cur);
   if (n >= 1e9) return 'Rp' + (n / 1e9).toFixed(1) + 'M';
   if (n >= 1e6) return 'Rp' + (n / 1e6).toFixed(1) + 'jt';
   if (n >= 1e3) return 'Rp' + Math.round(n / 1e3) + 'rb';

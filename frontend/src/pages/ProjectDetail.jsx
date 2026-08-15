@@ -42,7 +42,7 @@ export default function ProjectDetail({ onMenu }) {
     <>
       <Topbar title={<h1><span style={{ color:'var(--muted)', fontWeight:400, cursor:'pointer' }} onClick={() => nav('/projects')}>Projects / </span>{p.name}</h1>} sub={`${typeLabel[p.type]} · ${projStatusLabel[p.status]}`} onMenu={onMenu}>
         <button className="btn ghost sm" onClick={() => open(<WorkLogForm projects={projects} defaultProject={p.id} tasks={p.tasks} onDone={reload} />)}><Icon name="bolt" /> Catat</button>
-        <button className="btn sm" onClick={() => open(<ProjectForm edit={p} />)}><Icon name="edit" /> Edit</button>
+        <button className="btn sm" onClick={() => open(<ProjectForm edit={p} onDone={reload} />)}><Icon name="edit" /> Edit</button>
       </Topbar>
 
       <div className="dhead">
@@ -82,7 +82,7 @@ export default function ProjectDetail({ onMenu }) {
                 <div className="ti">{t.title}</div>
                 <div className="tm"><Badge cls={taskClass[t.status]}>{taskLabel[t.status]}</Badge><Badge cls={prioClass[t.priority]}>{prioLabel[t.priority]}</Badge>{t.due_date && <span><Icon name="calendar" size="sm" /> {fmtDate(t.due_date)}</span>}</div>
               </div>
-              <span className="rowact"><button onClick={() => open(<TaskForm edit={t} projects={projects} onDone={reload} />)}><Icon name="edit" /></button></span>
+              <span className="rowact"><button onClick={() => open(<TaskForm edit={t} projects={projects} onDone={reload} />)} title="Edit task" aria-label="Edit task"><Icon name="edit" /></button></span>
             </div>
           )) : <Empty icon="check-sq" action={<button className="btn sm" onClick={() => open(<TaskForm projects={projects} defaultProject={p.id} onDone={reload} />)}><Icon name="plus" /> Task Pertama</button>}>Belum ada task</Empty>}
         </>
@@ -101,7 +101,7 @@ export default function ProjectDetail({ onMenu }) {
                       <div className="wdesc">{l.description}</div>
                       <div className="wmeta"><span><Icon name="calendar" size="sm" /> {fmtDate(l.log_date)}</span>{l.task_title && <span><Icon name="check-sq" size="sm" /> {l.task_title}</span>}{l.billable && <Badge cls="b-green">Billable</Badge>}</div>
                     </div>
-                    <div className="row" style={{ gap:6 }}><span className="whours">{hrs(l.hours)}</span><span className="rowact"><button onClick={() => open(<WorkLogForm edit={l} projects={projects} tasks={p.tasks} onDone={reload} />)}><Icon name="edit" /></button></span></div>
+                    <div className="row" style={{ gap:6 }}><span className="whours">{hrs(l.hours)}</span><span className="rowact"><button onClick={() => open(<WorkLogForm edit={l} projects={projects} tasks={p.tasks} onDone={reload} />)} title="Edit log" aria-label="Edit log"><Icon name="edit" /></button></span></div>
                   </div>
                 </div>
               ))}
@@ -121,8 +121,8 @@ export default function ProjectDetail({ onMenu }) {
             { h:'Dibayar', cell:x => fmtDate(x.paid_date) },
             { h:'', cell:x => (
               <span className="rowact">
-                {x.status !== 'paid' && <button onClick={async () => { await api.markPaid(x.id); reload(); }} title="Tandai lunas"><Icon name="check" /></button>}
-                <button onClick={() => open(<PaymentForm edit={x} projects={projects} onDone={reload} />)}><Icon name="edit" /></button>
+                {x.status !== 'paid' && <button onClick={async () => { await api.markPaid(x.id); reload(); }} title="Tandai lunas" aria-label="Tandai lunas"><Icon name="check" /></button>}
+                <button onClick={() => open(<PaymentForm edit={x} projects={projects} onDone={reload} />)} title="Edit payment" aria-label="Edit payment"><Icon name="edit" /></button>
               </span>
             ) },
           ]} cardTitle={x => x.label || money(x.amount, x.currency)} empty="Belum ada payment" />
@@ -131,7 +131,7 @@ export default function ProjectDetail({ onMenu }) {
 
       {tab === 'notes' && (
         <div className="panel">
-          <h3><span className="tl"><Icon name="note" /> Notes</span><button className="btn ghost sm" onClick={() => open(<ProjectForm edit={p} />)}><Icon name="edit" /> Edit</button></h3>
+          <h3><span className="tl"><Icon name="note" /> Notes</span><button className="btn ghost sm" onClick={() => open(<ProjectForm edit={p} onDone={reload} />)}><Icon name="edit" /> Edit</button></h3>
           {p.notes ? <div style={{ whiteSpace:'pre-wrap', lineHeight:1.6, fontSize:13 }}>{p.notes}</div> : <Empty icon="note">Belum ada catatan. Klik Edit untuk nambah.</Empty>}
         </div>
       )}

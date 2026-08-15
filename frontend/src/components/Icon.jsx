@@ -31,6 +31,7 @@ const PATHS = {
   arrowDown: <path d="M12 5v14M6 13l6 6 6-6"/>,
   layers: <><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></>,
   target: <><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></>,
+  book: <><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></>,
 };
 export default function Icon({ name, size = 'sm' }) {
   return <svg className={`i ${size}`} viewBox="0 0 24 24" aria-hidden="true">{PATHS[name] || PATHS.grid}</svg>;

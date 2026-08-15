@@ -79,7 +79,7 @@ function Shell() {
         </main>
       </div>
       <BottomNav />
-      <button className="fab" onClick={() => open(<WorkLogForm projects={projects} />)} title="Catat kerjaan"><Icon name="bolt" /></button>
+      <button className="fab" onClick={() => open(<WorkLogForm projects={projects} />)} title="Catat kerjaan" aria-label="Catat kerjaan"><Icon name="bolt" /></button>
       {cmd && <CommandPalette onClose={() => setCmd(false)} />}
       <ToastHost />
     </>

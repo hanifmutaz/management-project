@@ -55,7 +55,7 @@ export default function WorkLog({ onMenu }) {
                         <div className="wdesc">{l.description}</div>
                         <div className="wmeta"><span className="dot" style={{ background:l.color }} /> {l.project_name}{l.task_title && <span><Icon name="check-sq" size="sm" /> {l.task_title}</span>}{l.billable && <Badge cls="b-green">Billable</Badge>}</div>
                       </div>
-                      <div className="row" style={{ gap:6 }}><span className="whours">{hrs(l.hours)}</span><span className="rowact"><button onClick={() => open(<WorkLogForm edit={l} projects={projects} onDone={reload} />)}><Icon name="edit" /></button></span></div>
+                      <div className="row" style={{ gap:6 }}><span className="whours">{hrs(l.hours)}</span><span className="rowact"><button onClick={() => open(<WorkLogForm edit={l} projects={projects} onDone={reload} />)} title="Edit log" aria-label="Edit log"><Icon name="edit" /></button></span></div>
                     </div>
                   </div>
                 ))}

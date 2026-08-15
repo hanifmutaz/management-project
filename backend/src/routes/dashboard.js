@@ -21,7 +21,7 @@ r.get('/', ah(async (_req, res) => {
 r.get('/analytics', ah(async (_req, res) => {
   const byTypeHours = (await query('SELECT * FROM v_hours_by_type')).rows;
   const incomeByMonth = (await query(`SELECT to_char(paid_date,'YYYY-MM') AS month, SUM(amount) AS income
-    FROM payments WHERE status='paid' AND paid_date IS NOT NULL GROUP BY 1 ORDER BY 1`)).rows;
+    FROM payments WHERE status='paid' AND paid_date IS NOT NULL AND currency='IDR' GROUP BY 1 ORDER BY 1`)).rows;
   const topProjects = (await query(`SELECT name,type,color,total_hours FROM v_project_summary ORDER BY total_hours DESC LIMIT 8`)).rows;
   res.json({ byTypeHours, incomeByMonth, topProjects });
 }));

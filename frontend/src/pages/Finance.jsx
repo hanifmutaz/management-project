@@ -51,8 +51,8 @@ export default function Finance({ onMenu }) {
           { h:'Dibayar', cell:p => fmtDate(p.paid_date) },
           { h:'', cell:p => (
             <span className="rowact">
-              {p.status !== 'paid' && <button onClick={async () => { await api.markPaid(p.id); reload(); }} title="Tandai lunas"><Icon name="check" /></button>}
-              <button onClick={() => open(<PaymentForm edit={p} projects={projects} onDone={reload} />)}><Icon name="edit" /></button>
+              {p.status !== 'paid' && <button onClick={async () => { await api.markPaid(p.id); reload(); }} title="Tandai lunas" aria-label="Tandai lunas"><Icon name="check" /></button>}
+              <button onClick={() => open(<PaymentForm edit={p} projects={projects} onDone={reload} />)} title="Edit payment" aria-label="Edit payment"><Icon name="edit" /></button>
             </span>
           ) },
         ]} cardTitle={p => `${p.project_name} · ${money(p.amount, p.currency)}`} empty="Belum ada payment. Tambah dari project freelance." />

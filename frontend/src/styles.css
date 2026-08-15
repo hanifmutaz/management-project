@@ -2,7 +2,7 @@
   --bg:#0b0d12;--panel:#14171f;--panel2:#1a1e28;--panel3:#222836;--line:#272d3a;
   --txt:#e9ecf3;--muted:#98a2b8;--faint:#697086;
   --brand:#6b9bff;--brand2:#7ba0ff;--soft:rgba(107,155,255,.13);--purple:#a586ff;
-  --green:#3ddc97;--yellow:#fbbf24;--orange:#fb923c;--red:#f87171;--gray:#64748b;
+  --green:#3ddc97;--yellow:#fbbf24;--orange:#fb923c;--red:#f87171;--gray:#64748b;--cyan:#22d3ee;
   --r:14px;--sh:0 10px 34px rgba(0,0,0,.4);--sh-sm:0 4px 14px rgba(0,0,0,.25);--ease:cubic-bezier(.22,.61,.36,1);
 }
 body.light{--bg:#f2f5fa;--panel:#fff;--panel2:#f3f6fb;--panel3:#e9eef6;--line:#e3e9f2;--txt:#151b26;--muted:#5a6478;--faint:#8b94a7;--soft:rgba(107,155,255,.1);--sh:0 10px 34px rgba(20,30,60,.1);--sh-sm:0 4px 14px rgba(20,30,60,.06)}
@@ -91,6 +91,7 @@ kbd{font-family:inherit;font-size:10px;background:var(--panel3);border:1px solid
 .b-green{background:rgba(61,220,151,.15);color:#3ddc97}.b-yellow{background:rgba(251,191,36,.16);color:#fbbf24}
 .b-orange{background:rgba(251,146,60,.16);color:#fb923c}.b-red{background:rgba(248,113,113,.15);color:#f87171}
 .b-gray{background:rgba(100,116,139,.2);color:#94a3b8}.b-blue{background:rgba(107,155,255,.18);color:#9bb8ff}.b-purple{background:rgba(165,134,255,.18);color:#c4adff}
+.b-cyan{background:rgba(34,211,238,.16);color:#22d3ee}
 .dot{width:9px;height:9px;border-radius:3px;display:inline-block;flex-shrink:0}
 .legend div{display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:9px;color:var(--muted)}
 .streak{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(120deg,rgba(251,146,60,.16),rgba(248,113,113,.16));color:var(--orange);font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:20px}
@@ -106,22 +107,30 @@ tbody tr{transition:background .14s}tbody tr:hover td{background:var(--panel2)}
 .rowact button.del:hover{color:var(--red);border-color:var(--red)}
 
 .pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
-.pcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s;animation:rise .5s var(--ease) both;position:relative;overflow:hidden}
-.pcard:hover{border-color:var(--brand);transform:translateY(-4px);box-shadow:var(--sh)}
-.pcard .cbar{position:absolute;left:0;top:0;bottom:0;width:3px}
-.pcard .code{font-size:10.5px;color:var(--faint);letter-spacing:.5px;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:6px;padding-right:60px}
-.pcard .name{font-size:15px;font-weight:700;margin:7px 0 4px;display:flex;align-items:center;gap:6px}
-.pcard .name .pinico{color:var(--brand)}
-.pcard .cli{font-size:11.5px;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.pcard .stats{display:flex;gap:14px;margin-top:10px;font-size:11.5px;color:var(--muted);flex-wrap:wrap}
+.pcard{--glow:color-mix(in srgb, var(--accent, var(--brand)) 30%, transparent);background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px;cursor:pointer;transition:transform .22s var(--ease),border-color .2s,box-shadow .28s;animation:rise .5s var(--ease) both;position:relative;overflow:hidden}
+.pcard::after{content:"";position:absolute;inset:0;background:radial-gradient(220px 140px at 100% 0%, var(--glow), transparent 70%);opacity:0;transition:opacity .3s;pointer-events:none}
+.pcard:hover{border-color:var(--accent, var(--brand));transform:translateY(-5px);box-shadow:0 14px 34px -10px var(--glow), var(--sh)}
+.pcard:hover::after{opacity:.55}
+.pcard .cbar{position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg, var(--accent, var(--brand)), color-mix(in srgb, var(--accent, var(--brand)) 40%, transparent));transition:width .2s}
+.pcard:hover .cbar{width:5px}
+.pcard .code{font-size:10.5px;color:var(--faint);letter-spacing:.5px;font-weight:600;display:flex;align-items:center;gap:6px;padding-right:64px;position:relative;z-index:1}
+.pcard .name{font-size:15px;font-weight:700;margin:9px 0 4px;display:flex;align-items:center;gap:6px;position:relative;z-index:1}
+.pcard .name .pinico{color:var(--accent, var(--brand));flex-shrink:0}
+.pcard .name .ntext{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.pcard .name .statusdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;box-shadow:0 0 0 3px color-mix(in srgb, currentColor 18%, transparent)}
+.pcard .cli{font-size:11.5px;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:6px;position:relative;z-index:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pcard .stats{display:flex;gap:14px;margin-top:10px;font-size:11.5px;color:var(--muted);flex-wrap:wrap;position:relative;z-index:1}
 .pcard .stats b{color:var(--txt)}
-.pcard .cardact{position:absolute;top:12px;right:12px;display:flex;gap:4px;opacity:0;transition:.16s}
-.pcard:hover .cardact{opacity:1}
-.pcard .idle{font-size:10.5px;margin-top:9px;border-top:1px dashed var(--line);padding-top:8px;display:flex;align-items:center;gap:6px}
-.pcard .pbar{height:5px;background:var(--panel2);border-radius:20px;overflow:hidden;margin-top:11px}
-.pcard .pbar>i{display:block;height:100%;border-radius:20px}
-.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
-.tag-chip{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--panel3);color:var(--muted)}
+.pcard .cardact{position:absolute;top:11px;right:11px;display:flex;gap:4px;opacity:0;transform:translateY(-3px);transition:opacity .18s,transform .18s;z-index:2}
+.pcard:hover .cardact{opacity:1;transform:translateY(0)}
+.pcard .cardact .rowact button{background:var(--panel);backdrop-filter:blur(6px);box-shadow:var(--sh-sm)}
+.pcard .cardact .rowact button.on{color:var(--accent, var(--brand));border-color:var(--accent, var(--brand))}
+.pcard .idle{font-size:10.5px;margin-top:9px;border-top:1px dashed var(--line);padding-top:8px;display:flex;align-items:center;gap:6px;position:relative;z-index:1}
+.pcard .pbar{height:6px;background:var(--panel2);border-radius:20px;overflow:hidden;margin-top:11px;position:relative;z-index:1;box-shadow:inset 0 1px 2px rgba(0,0,0,.15)}
+.pcard .pbar>i{display:block;height:100%;border-radius:20px;transition:width .6s var(--ease)}
+.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;position:relative;z-index:1}
+.tag-chip{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--panel3);color:var(--muted);transition:background .16s,color .16s}
+.pcard:hover .tag-chip{background:color-mix(in srgb, var(--accent, var(--brand)) 16%, var(--panel3));color:var(--txt)}
 
 .tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:16px;overflow-x:auto}
 .tabs a{padding:10px 14px;color:var(--muted);font-weight:600;font-size:12.5px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}

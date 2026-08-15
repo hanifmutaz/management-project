@@ -6,8 +6,8 @@ export function Badge({ cls, dot, children }) {
 export function RowActions({ onEdit, onDelete }) {
   return (
     <span className="rowact">
-      {onEdit && <button onClick={(e) => { e.stopPropagation(); onEdit(); }} title="Edit"><Icon name="edit" /></button>}
-      {onDelete && <button className="del" onClick={(e) => { e.stopPropagation(); onDelete(); }} title="Hapus"><Icon name="trash" /></button>}
+      {onEdit && <button onClick={(e) => { e.stopPropagation(); onEdit(); }} title="Edit" aria-label="Edit"><Icon name="edit" /></button>}
+      {onDelete && <button className="del" onClick={(e) => { e.stopPropagation(); onDelete(); }} title="Hapus" aria-label="Hapus"><Icon name="trash" /></button>}
     </span>
   );
 }

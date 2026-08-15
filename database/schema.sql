@@ -10,7 +10,7 @@ DROP TABLE IF EXISTS tasks      CASCADE;
 DROP TABLE IF EXISTS projects   CASCADE;
 
 DO $$ BEGIN
-  CREATE TYPE proj_type    AS ENUM ('office','freelance','parttime','personal');
+  CREATE TYPE proj_type    AS ENUM ('office','freelance','parttime','personal','kuliah');
   CREATE TYPE proj_status  AS ENUM ('active','on_hold','done','archived');
   CREATE TYPE task_status  AS ENUM ('todo','doing','done');
   CREATE TYPE priority_lvl AS ENUM ('low','medium','high');
@@ -138,9 +138,9 @@ SELECT
      AND log_date < date_trunc('week', CURRENT_DATE))                                                   AS hours_last_week,
   (SELECT COALESCE(SUM(hours),0) FROM work_logs WHERE log_date = CURRENT_DATE)                          AS hours_today,
   (SELECT COALESCE(SUM(hours),0) FROM work_logs WHERE log_date >= date_trunc('month', CURRENT_DATE))    AS hours_this_month,
-  (SELECT COALESCE(SUM(amount),0) FROM payments WHERE status<>'paid')                                   AS unpaid_total,
-  (SELECT COALESCE(SUM(amount),0) FROM payments WHERE status='paid'
-     AND paid_date >= date_trunc('month', CURRENT_DATE))                                                AS income_this_month;
+  (SELECT COALESCE(SUM(amount),0) FROM payments WHERE status<>'paid' AND currency='IDR')             AS unpaid_total,
+  (SELECT COALESCE(SUM(amount),0) FROM payments WHERE status='paid' AND currency='IDR'
+     AND paid_date >= date_trunc('month', CURRENT_DATE))                                              AS income_this_month;
 
 CREATE OR REPLACE VIEW v_hours_by_day AS
 SELECT log_date, SUM(hours) AS hours FROM work_logs

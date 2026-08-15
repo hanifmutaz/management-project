@@ -3,7 +3,7 @@ import { query } from '../db.js';
 import { ah, requireFields, checkNumber, checkEnum, ApiError } from '../lib/validate.js';
 
 const r = Router();
-const TYPES = ['office', 'freelance', 'parttime', 'personal'];
+const TYPES = ['office', 'freelance', 'parttime', 'personal', 'kuliah'];
 const STATUSES = ['active', 'on_hold', 'done', 'archived'];
 const RATE_TYPES = ['none', 'hourly', 'fixed'];
 

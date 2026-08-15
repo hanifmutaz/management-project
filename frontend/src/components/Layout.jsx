@@ -33,7 +33,7 @@ export function Sidebar({ open, onClose, onCmd }) {
       </nav>
       <div className="side-foot">
         <span className="who"><Icon name="user" size="sm" /> Mu&rsquo;taz</span>
-        <span className="iconbtn" style={{ width:32, height:32 }} onClick={() => { document.body.classList.toggle('light'); localStorage.setItem('mos_theme', document.body.classList.contains('light') ? 'light' : 'dark'); }} title="Tema"><Icon name="moon" /></span>
+        <button type="button" className="iconbtn" style={{ width:32, height:32 }} onClick={() => { document.body.classList.toggle('light'); localStorage.setItem('mos_theme', document.body.classList.contains('light') ? 'light' : 'dark'); }} title="Tema" aria-label="Ganti tema terang/gelap"><Icon name="moon" /></button>
       </div>
     </aside>
   );
@@ -54,7 +54,7 @@ export function Topbar({ title, sub, onMenu, children }) {
   return (
     <div className="topbar">
       <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-        <button className="hamb" onClick={onMenu}><Icon name="menu" /></button>
+        <button className="hamb" onClick={onMenu} aria-label="Buka menu"><Icon name="menu" /></button>
         <div>{title}{sub && <div className="sub">{sub}</div>}</div>
       </div>
       <div className="row">{children}</div>

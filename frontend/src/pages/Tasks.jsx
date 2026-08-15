@@ -47,7 +47,7 @@ export default function Tasks({ onMenu }) {
                 <div className="ti">{t.title}</div>
                 <div className="tm"><span className="dot" style={{ background:t.color }} /> {t.project_name}<Badge cls={prioClass[t.priority]}>{prioLabel[t.priority]}</Badge>{t.due_date && <span><Icon name="calendar" size="sm" /> {fmtDate(t.due_date)}</span>}</div>
               </div>
-              <span className="rowact"><button onClick={() => open(<TaskForm edit={t} projects={projects} onDone={reload} />)}><Icon name="edit" /></button></span>
+              <span className="rowact"><button onClick={() => open(<TaskForm edit={t} projects={projects} onDone={reload} />)} title="Edit task" aria-label="Edit task"><Icon name="edit" /></button></span>
             </div>
           ))}
         </div>
