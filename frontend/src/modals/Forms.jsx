@@ -7,6 +7,22 @@ import { dateInput, todayInput } from '../lib/format.js';
 
 const COLORS = ['#6b9bff', '#3ddc97', '#fb923c', '#a586ff', '#fbbf24', '#f87171', '#22d3ee', '#f472b6'];
 
+// "react, React, web" -> ['react', 'web'] — trims, drops empties, dedupes case-insensitively
+// while keeping the first-seen casing.
+function parseTags(str) {
+  const seen = new Set();
+  const out = [];
+  for (const raw of str.split(',')) {
+    const t = raw.trim();
+    if (!t) continue;
+    const key = t.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(t);
+  }
+  return out;
+}
+
 function Field({ label, req, children }) {
   return <div className="field"><label>{label} {req && <span className="req">*</span>}</label>{children}</div>;
 }
@@ -36,7 +52,7 @@ export function ProjectForm({ edit }) {
   const isPaid = f.type === 'freelance' || f.type === 'parttime';
   const save = async () => {
     setT(true); if (!f.name.trim()) return; setBusy(true);
-    const data = { ...f, rate: +f.rate || 0, tags: f.tags.split(',').map(s => s.trim()).filter(Boolean),
+    const data = { ...f, rate: +f.rate || 0, tags: parseTags(f.tags),
       rate_type: isPaid ? f.rate_type : 'none', start_date: f.start_date || null, due_date: f.due_date || null };
     try { edit ? await updateProject(edit.id, data) : await createProject(data); close(); }
     catch { setBusy(false); }
@@ -84,7 +100,7 @@ export function TaskForm({ edit, projects, defaultProject, onDone }) {
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
   const save = async () => {
     setT(true); if (!f.title.trim()) return; setBusy(true);
-    const data = { ...f, due_date: f.due_date || null, tags: f.tags.split(',').map(s => s.trim()).filter(Boolean) };
+    const data = { ...f, due_date: f.due_date || null, tags: parseTags(f.tags) };
     try { edit ? await api.updateTask(edit.id, data) : await api.createTask(data); toast(edit ? 'Task diperbarui' : 'Task dibuat'); await refresh(); onDone && onDone(); close(); }
     catch (e) { toast(e.message, 'err'); setBusy(false); }
   };

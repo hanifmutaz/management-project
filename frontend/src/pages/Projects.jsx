@@ -6,7 +6,7 @@ import { Topbar } from '../components/Layout.jsx';
 import Icon from '../components/Icon.jsx';
 import { useModal } from '../components/Modal.jsx';
 import { ProjectForm } from '../modals/Forms.jsx';
-import { typeLabel, typeClass, typeIcon, projStatusLabel, projStatusClass, hrs, money, idleText, idleColor, num } from '../lib/format.js';
+import { typeLabel, typeClass, typeIcon, projStatusLabel, projStatusClass, hrs, money, idleText, idleColor } from '../lib/format.js';
 
 export default function Projects({ onMenu }) {
   const { projects, pinProject } = useStore();

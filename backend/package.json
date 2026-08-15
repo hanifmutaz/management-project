@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "type": "module",
   "main": "src/server.js",
+  "engines": { "node": ">=18" },
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
+    "lint": "eslint .",
     "db:init": "psql -U postgres -d mutaz_os -f ../database/schema.sql && psql -U postgres -d mutaz_os -f ../database/seed.sql"
   },
-  "dependencies": { "cors": "^2.8.5", "dotenv": "^16.4.5", "express": "^4.19.2", "pg": "^8.12.0" }
+  "dependencies": { "cors": "^2.8.5", "dotenv": "^16.4.5", "express": "^4.19.2", "pg": "^8.12.0" },
+  "devDependencies": { "eslint": "^9.9.0", "@eslint/js": "^9.9.0" }
 }

@@ -7,7 +7,7 @@ import { Topbar } from '../components/Layout.jsx';
 import Icon from '../components/Icon.jsx';
 import { useModal } from '../components/Modal.jsx';
 import { ProjectForm, TaskForm, WorkLogForm, PaymentForm } from '../modals/Forms.jsx';
-import { typeLabel, typeClass, typeColor, projStatusLabel, projStatusClass, taskLabel, taskClass, prioClass, prioLabel, payLabel, payClass, hrs, money, fmtDate } from '../lib/format.js';
+import { typeLabel, typeClass, projStatusLabel, projStatusClass, taskLabel, taskClass, prioClass, prioLabel, payLabel, payClass, hrs, money, fmtDate } from '../lib/format.js';
 
 export default function ProjectDetail({ onMenu }) {
   const { id } = useParams();
