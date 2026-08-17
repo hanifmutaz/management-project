@@ -5,16 +5,24 @@ import { ah, requireFields, checkNumber, ApiError } from '../lib/validate.js';
 const r = Router();
 
 r.get('/', ah(async (req, res) => {
-  const { project_id, from, to, billable } = req.query;
+  const { project_id, from, to, billable, limit } = req.query;
   const cond = [], vals = [];
   if (project_id) { vals.push(project_id); cond.push(`w.project_id=$${vals.length}`); }
   if (from)       { vals.push(from); cond.push(`w.log_date >= $${vals.length}`); }
   if (to)         { vals.push(to);   cond.push(`w.log_date <= $${vals.length}`); }
   if (billable === 'true') cond.push('w.billable = true');
   const where = cond.length ? 'WHERE ' + cond.join(' AND ') : '';
+  // No hard cap by default — this endpoint backs the Work Log page and CSV export,
+  // both of which need the complete history, not a silently truncated slice.
+  // Pass ?limit=N (e.g. for a "recent activity" widget) to cap it explicitly.
+  let limitSql = '';
+  if (limit) {
+    const n = Number(limit);
+    if (Number.isFinite(n) && n > 0) { vals.push(Math.floor(n)); limitSql = ` LIMIT $${vals.length}`; }
+  }
   res.json((await query(`SELECT w.*, p.name AS project_name, p.type AS project_type, p.color, t.title AS task_title
     FROM work_logs w JOIN projects p ON p.id=w.project_id LEFT JOIN tasks t ON t.id=w.task_id
-    ${where} ORDER BY w.log_date DESC, w.id DESC LIMIT 300`, vals)).rows);
+    ${where} ORDER BY w.log_date DESC, w.id DESC${limitSql}`, vals)).rows);
 }));
 
 r.post('/', ah(async (req, res) => {

@@ -142,9 +142,13 @@ SELECT
   (SELECT COALESCE(SUM(amount),0) FROM payments WHERE status='paid' AND currency='IDR'
      AND paid_date >= date_trunc('month', CURRENT_DATE))                                              AS income_this_month;
 
+-- Zero-filled: selalu 14 baris (hari ini - 13 s/d hari ini) walau sebagian hari ga ada log,
+-- biar chart "Jam Kerja 14 Hari" di dashboard ga bolong/loncat tanggal.
 CREATE OR REPLACE VIEW v_hours_by_day AS
-SELECT log_date, SUM(hours) AS hours FROM work_logs
-WHERE log_date >= CURRENT_DATE - INTERVAL '13 days' GROUP BY log_date ORDER BY log_date;
+SELECT d::date AS log_date, COALESCE(SUM(w.hours), 0) AS hours
+FROM generate_series(CURRENT_DATE - INTERVAL '13 days', CURRENT_DATE, INTERVAL '1 day') AS d
+LEFT JOIN work_logs w ON w.log_date = d::date
+GROUP BY d ORDER BY d;
 
 CREATE OR REPLACE VIEW v_hours_by_type AS
 SELECT p.type, COALESCE(SUM(w.hours),0) AS hours

@@ -35,7 +35,7 @@ export default function Dashboard({ onMenu }) {
     { label:'Jam Hari Ini', value:hrs(k.hours_today), tag:'tercatat', accent:'acc-green', icon:'bolt' },
     { label:'Jam Minggu Ini', value:hrs(k.hours_this_week), delta:delta(k.hours_this_week, k.hours_last_week), tag:'vs mgg lalu', accent:'acc-blue', icon:'clock' },
     { label:'Task Aktif', value:k.open_tasks, tag:k.overdue_tasks > 0 ? `${k.overdue_tasks} overdue` : 'on track', accent:k.overdue_tasks > 0 ? 'acc-orange' : 'acc-green', icon:'check-sq' },
-    { label:'Income Bulan Ini', value:moneyShort(k.income_this_month), tag:'sudah dibayar', accent:'acc-purple', icon:'wallet' },
+    { label:'Income Bulan Ini', value:moneyShort(k.income_this_month), tag:'sudah dibayar · IDR', accent:'acc-purple', icon:'wallet' },
   ];
   const days = dashboard.hoursByDay;
   const maxH = Math.max(...days.map(d => Number(d.hours)), 1);
@@ -122,7 +122,7 @@ export default function Dashboard({ onMenu }) {
 
       {Number(k.unpaid_total) > 0 && (
         <div className="panel" style={{ borderLeft:'3px solid var(--orange)' }}>
-          <h3><span className="tl"><Icon name="wallet" /> Belum Dibayar</span>
+          <h3><span className="tl"><Icon name="wallet" /> Belum Dibayar <span className="mini">(IDR)</span></span>
             <span className="row"><b style={{ color:'var(--orange)', fontSize:16 }}>{money(k.unpaid_total)}</b>
             <button className="btn ghost sm" onClick={() => nav('/finance')}>Lihat Finance</button></span></h3>
         </div>

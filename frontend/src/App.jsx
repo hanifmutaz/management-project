@@ -7,6 +7,7 @@ import CommandPalette from './components/CommandPalette.jsx';
 import { WorkLogForm } from './modals/Forms.jsx';
 import Icon from './components/Icon.jsx';
 import { SkeletonDash } from './components/ui.jsx';
+import { setAppKey } from './lib/api.js';
 import Dashboard from './pages/Dashboard.jsx';
 import Projects from './pages/Projects.jsx';
 import ProjectDetail from './pages/ProjectDetail.jsx';
@@ -15,10 +16,28 @@ import WorkLog from './pages/WorkLog.jsx';
 import Finance from './pages/Finance.jsx';
 import Analytics from './pages/Analytics.jsx';
 
+// Shown when the backend has APP_PASSWORD set and we either haven't sent a key yet
+// or sent a wrong one. Not real per-user auth — just a lock on the front door.
+function PasswordGate({ onSubmit }) {
+  const [pw, setPw] = useState('');
+  return (
+    <div className="center-load" style={{ textAlign:'center', padding:20 }}>
+      <div style={{ maxWidth:340, width:'100%' }}>
+        <b>⌘ MUTAZ OS — Terkunci</b>
+        <p style={{ color:'var(--muted)', margin:'8px 0 16px', fontSize:12.5, lineHeight:1.6 }}>Masukin password buat lanjut.</p>
+        <form onSubmit={(e) => { e.preventDefault(); onSubmit(pw); }} style={{ display:'flex', gap:8 }}>
+          <input type="password" autoFocus value={pw} onChange={e => setPw(e.target.value)} placeholder="Password" style={{ flex:1 }} />
+          <button className="btn" type="submit">Masuk</button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 function Shell() {
   const [drawer, setDrawer] = useState(false);
   const [cmd, setCmd] = useState(false);
-  const { loading, error, projects } = useStore();
+  const { loading, error, projects, refresh } = useStore();
   const { open } = useModal();
   const nav = useNavigate();
   const gKey = useRef(false);
@@ -51,6 +70,9 @@ function Shell() {
       <main className="main"><div style={{ marginBottom:20 }}><div className="sk sk-line" style={{ width:220, height:24 }} /></div><SkeletonDash /></main>
     </div>
   );
+  if (error === 'Unauthorized') {
+    return <PasswordGate onSubmit={(pw) => { setAppKey(pw); refresh(); }} />;
+  }
   if (error) return (
     <div className="center-load" style={{ textAlign:'center', padding:20 }}>
       <Icon name="x" size="xl" />

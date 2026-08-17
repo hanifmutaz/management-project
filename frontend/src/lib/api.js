@@ -1,6 +1,21 @@
-const BASE = '/api';
+// In dev, Vite proxies /api to localhost:4000 (see vite.config.js). In prod, the
+// frontend and backend are separate Vercel projects, so point at the backend's URL
+// via VITE_API_URL (set in Vercel project settings → Environment Variables).
+const BASE = (import.meta.env.VITE_API_URL || '') + '/api';
+
+// Shared-password gate (see backend/src/app.js APP_PASSWORD). Stored in localStorage
+// so it survives refresh; only relevant once this is deployed publicly.
+const KEY_STORAGE = 'mutaz_os_app_key';
+export const getAppKey = () => localStorage.getItem(KEY_STORAGE) || '';
+export const setAppKey = (k) => localStorage.setItem(KEY_STORAGE, k);
+
 async function req(path, options = {}) {
-  const res = await fetch(BASE + path, { headers: { 'Content-Type': 'application/json' }, ...options });
+  const key = getAppKey();
+  const res = await fetch(BASE + path, {
+    ...options,
+    headers: { 'Content-Type': 'application/json', ...(key ? { 'x-app-key': key } : {}), ...options.headers },
+  });
+  if (res.status === 401) { localStorage.removeItem(KEY_STORAGE); throw new Error('Unauthorized'); }
   if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || res.statusText);
   if (res.status === 204) return null;
   return res.json();

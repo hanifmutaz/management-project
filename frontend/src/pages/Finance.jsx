@@ -32,11 +32,16 @@ export default function Finance({ onMenu }) {
         <button className="btn sm" onClick={() => open(<PaymentForm projects={projects} onDone={reload} />)}><Icon name="plus" /> Payment</button>
       </Topbar>
       <div className="kpis">
-        <KpiCard label="Income Bulan Ini" value={moneyShort(thisMonth)} tag="sudah dibayar" accent="acc-green" icon="wallet" />
-        <KpiCard label="Total Dibayar" value={moneyShort(paid)} tag="semua waktu" accent="acc-blue" icon="check" />
-        <KpiCard label="Belum Dibayar" value={moneyShort(unpaid)} tag="outstanding" accent="acc-orange" icon="clock" />
-        <KpiCard label="Total Entri" value={payments.length} tag="payment" accent="acc-purple" icon="chart" />
+        <KpiCard label="Income Bulan Ini" value={moneyShort(thisMonth)} tag="sudah dibayar · IDR" accent="acc-green" icon="wallet" />
+        <KpiCard label="Total Dibayar" value={moneyShort(paid)} tag="semua waktu · IDR" accent="acc-blue" icon="check" />
+        <KpiCard label="Belum Dibayar" value={moneyShort(unpaid)} tag="outstanding · IDR" accent="acc-orange" icon="clock" />
+        <KpiCard label="Total Entri" value={payments.length} tag="payment · semua currency" accent="acc-purple" icon="chart" />
       </div>
+      {payments.some(p => p.currency !== 'IDR') && (
+        <p style={{ color:'var(--muted)', fontSize:12, marginTop:-8, marginBottom:16 }}>
+          KPI di atas cuma ngitung payment IDR — ada payment currency lain di tabel bawah, cek manual.
+        </p>
+      )}
       <div className="filters">
         <div className="seg">{[['', 'Semua'], ['unpaid', 'Unpaid'], ['invoiced', 'Invoiced'], ['paid', 'Paid']].map(([v, l]) => <button key={v} className={status === v ? 'on' : ''} onClick={() => setStatus(v)}>{l}</button>)}</div>
       </div>
