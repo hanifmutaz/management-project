@@ -3,9 +3,10 @@ import Icon from '../components/Icon.jsx';
 import { useStore } from '../lib/store.jsx';
 import { useModal } from '../components/Modal.jsx';
 import { api } from '../lib/api.js';
-import { dateInput, todayInput } from '../lib/format.js';
+import { dateInput, todayInput, typeShades, typeLabel } from '../lib/format.js';
 
 const COLORS = ['#6b9bff', '#3ddc97', '#fb923c', '#a586ff', '#fbbf24', '#f87171', '#22d3ee', '#f472b6'];
+const shadesFor = (type) => typeShades[type] || COLORS;
 
 // "react, React, web" -> ['react', 'web'] — trims, drops empties, dedupes case-insensitively
 // while keeping the first-seen casing.
@@ -44,11 +45,18 @@ export function ProjectForm({ edit, onDone }) {
   const [f, setF] = useState(edit ? {
     name:edit.name, type:edit.type, status:edit.status, description:edit.description || '',
     client_name:edit.client_name || '', rate_type:edit.rate_type, rate:Number(edit.rate) || 0, currency:edit.currency || 'IDR',
-    color:edit.color || COLORS[0], tags:(edit.tags || []).join(', '), notes:edit.notes || '',
+    color:edit.color || shadesFor(edit.type)[0], tags:(edit.tags || []).join(', '), notes:edit.notes || '',
     start_date:dateInput(edit.start_date), due_date:dateInput(edit.due_date),
-  } : { name:'', type:'personal', status:'active', description:'', client_name:'', rate_type:'none', rate:0, currency:'IDR', color:COLORS[0], tags:'', notes:'', start_date:'', due_date:'' });
+  } : { name:'', type:'personal', status:'active', description:'', client_name:'', rate_type:'none', rate:0, currency:'IDR', color:shadesFor('personal')[0], tags:'', notes:'', start_date:'', due_date:'' });
   const [busy, setBusy] = useState(false); const [t, setT] = useState(false);
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
+  // Ganti kategori -> warna ikut nyesuaiin ke shade kategori baru itu (kecuali warna yang
+  // lagi kepilih emang udah salah satu shade kategori baru, biarin aja).
+  const setType = (e) => {
+    const type = e.target.value;
+    const shades = shadesFor(type);
+    setF({ ...f, type, color: shades.includes(f.color) ? f.color : shades[0] });
+  };
   const isPaid = f.type === 'freelance' || f.type === 'parttime';
   const save = async () => {
     setT(true); if (!f.name.trim()) return; setBusy(true);
@@ -63,7 +71,7 @@ export function ProjectForm({ edit, onDone }) {
       <h3><Icon name="folder" /> {edit ? 'Edit' : 'Project Baru'}</h3>
       <Field label="Nama Project" req><input className={t && !f.name.trim() ? 'err' : ''} value={f.name} onChange={set('name')} placeholder="cth: Landing Page UMKM" autoFocus /></Field>
       <div className="f2">
-        <Field label="Type"><select value={f.type} onChange={set('type')}><option value="office">Kantor</option><option value="freelance">Freelance</option><option value="parttime">Part-time</option><option value="kuliah">Kuliah</option><option value="personal">Personal</option></select></Field>
+        <Field label="Type"><select value={f.type} onChange={setType}><option value="office">Kantor</option><option value="freelance">Freelance</option><option value="parttime">Part-time</option><option value="kuliah">Kuliah</option><option value="personal">Personal</option></select></Field>
         <Field label="Status"><select value={f.status} onChange={set('status')}><option value="active">Active</option><option value="on_hold">On Hold</option><option value="done">Done</option><option value="archived">Archived</option></select></Field>
       </div>
       {isPaid && (
@@ -82,7 +90,8 @@ export function ProjectForm({ edit, onDone }) {
         <Field label="Target"><input type="date" value={f.due_date} onChange={set('due_date')} /></Field>
       </div>
       <Field label="Warna">
-        <div className="color-row">{COLORS.map(c => <div key={c} className={`sw ${f.color === c ? 'on' : ''}`} style={{ background: c }} onClick={() => setF({ ...f, color: c })} />)}</div>
+        <div className="color-row">{shadesFor(f.type).map(c => <div key={c} className={`sw ${f.color === c ? 'on' : ''}`} style={{ background: c }} onClick={() => setF({ ...f, color: c })} />)}</div>
+        <div style={{ color:'var(--faint)', fontSize:10.5, marginTop:6 }}>Shade ngikut kategori "{typeLabel[f.type]}" biar konsisten sama project lain di kategori yang sama.</div>
       </Field>
       <Field label="Tags (pisah koma)"><input value={f.tags} onChange={set('tags')} placeholder="react, web" /></Field>
       <Field label="Catatan / Notes"><textarea rows="2" value={f.notes} onChange={set('notes')} placeholder="Catatan bebas, keputusan, dll..." /></Field>

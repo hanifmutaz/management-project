@@ -2,6 +2,16 @@ export const typeLabel = { office:'Kantor', freelance:'Freelance', parttime:'Par
 export const typeClass = { office:'b-blue', freelance:'b-green', parttime:'b-purple', personal:'b-yellow', kuliah:'b-cyan' };
 export const typeColor = { office:'#5b8cff', freelance:'#34d399', parttime:'#9b6bff', personal:'#fbbf24', kuliah:'#22d3ee' };
 export const typeIcon = { office:'briefcase', freelance:'wallet', parttime:'clock', personal:'user', kuliah:'book' };
+// Shade per kategori — tiap project dalam 1 kategori pake salah satu warna ini, biar dari
+// jauh langsung kebaca "ini kantor/freelance/dst" (hue sama), tapi masih bisa dibedain antar
+// project (shade beda). Dipake di color-picker form project (lihat Forms.jsx).
+export const typeShades = {
+  office:    ['#5b8cff', '#3b6fe0', '#7ba0ff', '#274ea8', '#8fb3ff', '#4a7ff0'],
+  freelance: ['#34d399', '#189367', '#5ee0b0', '#0f7a53', '#7bead0', '#22b880'],
+  parttime:  ['#9b6bff', '#6a3ed1', '#b28cff', '#552fa8', '#c5a8ff', '#8150e6'],
+  personal:  ['#fbbf24', '#c9910a', '#ffd166', '#a87708', '#ffdd94', '#e0a70f'],
+  kuliah:    ['#22d3ee', '#0d94ab', '#5ee3f5', '#0a7a8c', '#8aebf7', '#12b6d1'],
+};
 
 export const projStatusLabel = { active:'Active', on_hold:'On Hold', done:'Done', archived:'Archived' };
 export const projStatusClass = { active:'b-green', on_hold:'b-yellow', done:'b-blue', archived:'b-gray' };
