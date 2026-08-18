@@ -69,6 +69,32 @@ export function idleColor(days) {
   if (days >= 4) return 'var(--yellow)';
   return 'var(--muted)';
 }
+const DAYFULL = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+// Label hari buat grouping "Upcoming": Hari ini / Besok / nama hari (< 7 hari) / tanggal biasa
+export function dayLabel(iso) {
+  if (!iso) return '';
+  const d = new Date(iso); if (isNaN(d)) return iso;
+  const t = new Date(); t.setHours(0, 0, 0, 0);
+  const dd = new Date(d); dd.setHours(0, 0, 0, 0);
+  const diff = Math.round((dd - t) / 86400000);
+  if (diff === 0) return 'Hari ini';
+  if (diff === 1) return 'Besok';
+  if (diff > 1 && diff < 7) return DAYFULL[d.getDay()];
+  return fmtDate(iso);
+}
+// "X lalu" relatif dari timestamp (buat Kerjaan Terakhir)
+export function timeAgo(iso) {
+  if (!iso) return '';
+  const d = new Date(iso); if (isNaN(d)) return '';
+  const min = Math.floor((Date.now() - d.getTime()) / 60000);
+  if (min < 1) return 'baru aja';
+  if (min < 60) return min + 'm lalu';
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return hr + 'j lalu';
+  const day = Math.floor(hr / 24);
+  if (day < 7) return day + 'h lalu';
+  return fmtDate(iso);
+}
 export function greeting() {
   const h = new Date().getHours();
   if (h < 11) return 'Selamat pagi';
