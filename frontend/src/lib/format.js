@@ -34,6 +34,7 @@ export function moneyShort(v, cur = 'IDR') {
 
 const MON = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
 const DAY = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+export function monthYear(d) { return `${MON[d.getMonth()]} ${d.getFullYear()}`; }
 export function fmtDate(iso) {
   if (!iso) return '—';
   const d = new Date(iso); if (isNaN(d)) return iso;

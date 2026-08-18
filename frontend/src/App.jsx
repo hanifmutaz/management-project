@@ -15,6 +15,7 @@ import Tasks from './pages/Tasks.jsx';
 import WorkLog from './pages/WorkLog.jsx';
 import Finance from './pages/Finance.jsx';
 import Analytics from './pages/Analytics.jsx';
+import Timeline from './pages/Timeline.jsx';
 
 // Shown when the backend has APP_PASSWORD set and we either haven't sent a key yet
 // or sent a wrong one. Not real per-user auth — just a lock on the front door.
@@ -51,7 +52,7 @@ function Shell() {
       if (typing) return;
       if (e.key === 'g') { gKey.current = true; setTimeout(() => { gKey.current = false; }, 700); return; }
       if (gKey.current) {
-        const map = { d:'/', p:'/projects', t:'/tasks', w:'/worklog', f:'/finance', a:'/analytics' };
+        const map = { d:'/', p:'/projects', t:'/tasks', w:'/worklog', f:'/finance', a:'/analytics', l:'/timeline' };
         if (map[e.key]) { nav(map[e.key]); gKey.current = false; }
         return;
       }
@@ -95,6 +96,7 @@ function Shell() {
             <Route path="/projects/:id" element={<ProjectDetail onMenu={onMenu} />} />
             <Route path="/tasks" element={<Tasks onMenu={onMenu} />} />
             <Route path="/worklog" element={<WorkLog onMenu={onMenu} />} />
+            <Route path="/timeline" element={<Timeline onMenu={onMenu} />} />
             <Route path="/finance" element={<Finance onMenu={onMenu} />} />
             <Route path="/analytics" element={<Analytics onMenu={onMenu} />} />
           </Routes>

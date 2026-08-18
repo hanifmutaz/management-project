@@ -12,6 +12,7 @@ export function Sidebar({ open, onClose, onCmd }) {
     { to:'/projects', icon:'folder', label:'Projects', cnt:activeProj },
     { to:'/tasks', icon:'check-sq', label:'Tasks', cnt:openTasks },
     { to:'/worklog', icon:'clock', label:'Work Log' },
+    { to:'/timeline', icon:'calendar', label:'Timeline' },
     { to:'/finance', icon:'wallet', label:'Finance' },
     { to:'/analytics', icon:'chart', label:'Analytics' },
   ];

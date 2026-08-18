@@ -28,6 +28,7 @@ export default function CommandPalette({ onClose }) {
       { group:'Navigasi', icon:'folder', label:'Projects', sub:'g p', run:() => go('/projects') },
       { group:'Navigasi', icon:'check-sq', label:'Tasks', sub:'g t', run:() => go('/tasks') },
       { group:'Navigasi', icon:'clock', label:'Work Log', sub:'g w', run:() => go('/worklog') },
+      { group:'Navigasi', icon:'calendar', label:'Timeline', sub:'g l', run:() => go('/timeline') },
       { group:'Navigasi', icon:'wallet', label:'Finance', sub:'g f', run:() => go('/finance') },
       { group:'Navigasi', icon:'chart', label:'Analytics', sub:'g a', run:() => go('/analytics') },
       { group:'Tampilan', icon:'moon', label:'Toggle Dark / Light', run:() => act(() => { document.body.classList.toggle('light'); localStorage.setItem('mos_theme', document.body.classList.contains('light') ? 'light' : 'dark'); }) },
