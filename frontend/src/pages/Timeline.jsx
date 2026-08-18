@@ -8,7 +8,9 @@ import { typeLabel, projStatusLabel, projStatusClass, monthYear, fmtDate } from 
 
 const MS_DAY = 86400000;
 const startOfDay = (d) => { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; };
-const toDate = (iso) => { const d = new Date(iso); return isNaN(d) ? null : startOfDay(d); };
+// PENTING: new Date(null) di JS balikin epoch (1 Jan 1970), BUKAN invalid date — makanya
+// harus dicek falsy dulu sebelum di-construct, biar null beneran jatuh ke fallback.
+const toDate = (iso) => { if (!iso) return null; const d = new Date(iso); return isNaN(d) ? null : startOfDay(d); };
 
 // Setiap project pasti punya created_at (default now()), jadi bar-nya SELALU bisa digambar
 // walau start_date/due_date belum diisi manual — biar Timeline langsung kepake tanpa isi data dulu.
