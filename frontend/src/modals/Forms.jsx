@@ -142,7 +142,7 @@ export function WorkLogForm({ edit, projects, defaultProject, tasks = [], onDone
   const save = async () => {
     setT(true); if (!f.description.trim()) return; setBusy(true);
     const data = { ...f, task_id: f.task_id || null, hours: +f.hours || 0 };
-    try { edit ? await api.updateLog(edit.id, data) : await api.createLog(data); toast(edit ? 'Log diperbarui' : 'Kerjaan dicatat 🔥'); await refresh(); onDone && onDone(); close(); }
+    try { edit ? await api.updateLog(edit.id, data) : await api.createLog(data); toast(edit ? 'Log diperbarui' : 'Kerjaan dicatat'); await refresh(); onDone && onDone(); close(); }
     catch (e) { toast(e.message, 'err'); setBusy(false); }
   };
   const del = async () => { await api.deleteLog(edit.id); toast('Log dihapus'); await refresh(); onDone && onDone(); close(); };

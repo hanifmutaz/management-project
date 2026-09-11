@@ -26,7 +26,7 @@ export default function Dashboard({ onMenu }) {
     setSaving(true);
     try {
       await api.createLog({ project_id: pid || projects[0]?.id, description: q, hours: +qh || 0, log_date: new Date().toISOString().slice(0,10) });
-      setQ(''); setQh(1); await refresh(); toast('Kerjaan dicatat 🔥');
+      setQ(''); setQh(1); await refresh(); toast('Kerjaan dicatat');
     } catch (e) { toast(e.message, 'err'); }
     setSaving(false);
   };
@@ -41,7 +41,7 @@ export default function Dashboard({ onMenu }) {
 
   const kpi = [
     { label:'Task Hari Ini', value:totalToday ? `${doneToday}/${totalToday}` : '0',
-      tag: totalToday === 0 ? 'ga ada due hari ini' : doneToday === totalToday ? 'semua kelar 🎉' : `${totalToday - doneToday} belum kelar`,
+      tag: totalToday === 0 ? 'ga ada due hari ini' : doneToday === totalToday ? 'semua kelar' : `${totalToday - doneToday} belum kelar`,
       accent: totalToday === 0 ? 'acc-blue' : doneToday === totalToday ? 'acc-green' : 'acc-orange', icon:'check-sq' },
     { label:'Task Aktif', value:k.open_tasks, tag:'total belum selesai', accent:'acc-blue', icon:'layers' },
     { label:'Overdue', value:k.overdue_tasks, tag:k.overdue_tasks > 0 ? 'perlu perhatian!' : 'aman, ga ada telat', accent:k.overdue_tasks > 0 ? 'acc-red' : 'acc-green', icon:'calendar' },
@@ -68,7 +68,7 @@ export default function Dashboard({ onMenu }) {
   return (
     <>
       <Topbar
-        title={<div className="hi">{greeting()}, <span className="accent">Mu&rsquo;taz</span> 👋</div>}
+        title={<div className="hi">{greeting()}, <span className="accent">Mu&rsquo;taz</span></div>}
         sub="Ini yang perlu lu kerjain hari ini"
         onMenu={onMenu}
       >
@@ -102,7 +102,7 @@ export default function Dashboard({ onMenu }) {
             </div>
           )) : (
             <Empty icon="check-sq">
-              <div>You&rsquo;re all caught up 🎉</div>
+              <div>You&rsquo;re all caught up</div>
               <div style={{ color:'var(--faint)', fontSize:11.5, marginTop:3 }}>Tidak ada task yang harus diselesaikan hari ini.</div>
             </Empty>
           )}
@@ -184,7 +184,7 @@ export default function Dashboard({ onMenu }) {
                 </div>
               ))}
             </div>
-          )) : <Empty icon="check">No upcoming deadlines 🎉</Empty>}
+          )) : <Empty icon="check">No upcoming deadlines</Empty>}
         </div>
         <div className="panel">
           <h3><span className="tl"><Icon name="fire" /> Lama Ga Disentuh</span><span className="mini">≥5 hari</span></h3>
@@ -193,7 +193,7 @@ export default function Dashboard({ onMenu }) {
               <div className="l"><span className="swatch" style={{ background:p.color }} /><span>{p.name}</span></div>
               <span style={{ color:idleColor(p.days_idle), whiteSpace:'nowrap' }}>{idleText(p.days_idle)}</span>
             </div>
-          )) : <Empty icon="check">Semua project fresh 🎉</Empty>}
+          )) : <Empty icon="check">Semua project fresh</Empty>}
         </div>
       </div>
     </>

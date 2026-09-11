@@ -108,10 +108,10 @@ export function timeAgo(iso) {
 }
 export function greeting() {
   const h = new Date().getHours();
-  if (h < 11) return 'Selamat pagi';
-  if (h < 15) return 'Selamat siang';
-  if (h < 19) return 'Selamat sore';
-  return 'Selamat malam';
+  if (h < 11) return 'Gas pagi';
+  if (h < 15) return 'Otw siang';
+  if (h < 19) return 'Lanjut sore';
+  return 'Begadang lagi';
 }
 // delta % antara dua angka
 export function delta(cur, prev) {
