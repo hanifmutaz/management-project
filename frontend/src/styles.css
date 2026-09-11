@@ -5,7 +5,7 @@
   --green:#2FBF71;--yellow:#F2B93D;--orange:#F2994A;--red:#EF5A5A;--gray:#7B7F91;--cyan:#3AB7C4;
   --r:14px;--sh:0 10px 30px rgba(0,0,0,.35);--sh-sm:0 2px 10px rgba(0,0,0,.18);--ease:cubic-bezier(.22,.61,.36,1);
 }
-body.light{--bg:#F6F7FB;--panel:#fff;--panel2:#F9FAFC;--panel3:#F0F1F6;--line:#ECEEF3;--txt:#12141C;--muted:#6B7280;--faint:#9CA3AF;--soft:rgba(139,124,246,.1);--sh:0 1px 3px rgba(16,24,40,.06),0 1px 2px rgba(16,24,40,.04);--sh-sm:0 1px 2px rgba(16,24,40,.05)}
+body.light{--bg:#F6F7FB;--panel:#fff;--panel2:#F9FAFC;--panel3:#F0F1F6;--line:#ECEEF3;--txt:#12141C;--muted:#52596B;--faint:#6B7280;--soft:rgba(139,124,246,.1);--sh:0 1px 3px rgba(16,24,40,.06),0 1px 2px rgba(16,24,40,.04);--sh-sm:0 1px 2px rgba(16,24,40,.05)}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:'Plus Jakarta Sans','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);font-size:14px;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased}
