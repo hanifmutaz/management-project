@@ -65,13 +65,13 @@ export default function Timeline({ onMenu }) {
 
   return (
     <>
-      <Topbar title={<h1>Timeline</h1>} sub={rows.length ? `${rows.length} project · ${monthYear(minDate)} – ${months.length ? months[months.length - 1].key : ''}` : 'Rentang waktu semua project'} onMenu={onMenu} />
+      <Topbar title={<h1>Timeline</h1>} sub={rows.length ? `${rows.length} project${rows.length === 1 ? '' : 's'} · ${monthYear(minDate)} – ${months.length ? months[months.length - 1].key : ''}` : 'Time range of all projects'} onMenu={onMenu} />
       <div className="filters">
         <div className="seg">
-          {[['', 'Semua'], ['office', 'Kantor'], ['freelance', 'Freelance'], ['parttime', 'Part-time'], ['kuliah', 'Kuliah'], ['personal', 'Personal']].map(([v, l]) =>
+          {[['', 'All'], ['office', 'Office'], ['freelance', 'Freelance'], ['parttime', 'Part-time'], ['kuliah', 'Study'], ['personal', 'Personal']].map(([v, l]) =>
             <button key={v} className={type === v ? 'on' : ''} onClick={() => setType(v)}>{l}</button>)}
         </div>
-        <select value={status} onChange={e => setStatus(e.target.value)}><option value="active">Active</option><option value="on_hold">On Hold</option><option value="done">Done</option><option value="archived">Archived</option><option value="">Semua Status</option></select>
+        <select value={status} onChange={e => setStatus(e.target.value)}><option value="active">Active</option><option value="on_hold">On Hold</option><option value="done">Done</option><option value="archived">Archived</option><option value="">All Statuses</option></select>
       </div>
 
       {rows.length ? (
@@ -90,25 +90,25 @@ export default function Timeline({ onMenu }) {
               <div className="gantt-months">
                 {months.map(m => <div className="gantt-month" style={{ width:m.pct + '%' }} key={m.key}>{m.key}</div>)}
               </div>
-              {todayPct >= 0 && todayPct <= 100 && <div className="gantt-today" style={{ left:todayPct + '%' }} title="Hari ini" />}
+              {todayPct >= 0 && todayPct <= 100 && <div className="gantt-today" style={{ left:todayPct + '%' }} title="Today" />}
               {rows.map(p => (
                 <div className="gantt-row" key={p.id}>
                   <div
                     className="gantt-bar"
                     style={{ left:p.leftPct + '%', width:p.widthPct + '%', background:p.open ? `linear-gradient(90deg, ${p.color} 75%, transparent 100%)` : p.color }}
                     onClick={() => nav('/projects/' + p.id)}
-                    title={`${p.name} (${typeLabel[p.type]})\n${fmtDate(p.start)} – ${p.open ? 'berjalan' : fmtDate(p.end)}\n${projStatusLabel[p.status]}${!p.due_date ? '\n(belum ada target tanggal — estimasi)' : ''}`}
+                    title={`${p.name} (${typeLabel[p.type]})\n${fmtDate(p.start)} – ${p.open ? 'ongoing' : fmtDate(p.end)}\n${projStatusLabel[p.status]}${!p.due_date ? '\n(no target date set — estimated)' : ''}`}
                   />
                 </div>
               ))}
             </div>
           </div>
         </div>
-      ) : <Empty icon="calendar">Belum ada project di filter ini</Empty>}
+      ) : <Empty icon="calendar">No projects match this filter</Empty>}
 
       {rows.length > 0 && (
         <p style={{ color:'var(--faint)', fontSize:11, marginTop:10 }}>
-          Geser tabel ke samping buat liat bulan lain · bar transparan di ujung = project aktif tanpa tanggal target · klik bar buat buka project
+          Scroll sideways to see other months · a faded bar end = active project with no target date · click a bar to open the project
         </p>
       )}
     </>

@@ -41,7 +41,7 @@ export default function ProjectDetail({ onMenu }) {
   return (
     <>
       <Topbar title={<h1><span style={{ color:'var(--muted)', fontWeight:400, cursor:'pointer' }} onClick={() => nav('/projects')}>Projects / </span>{p.name}</h1>} sub={`${typeLabel[p.type]} · ${projStatusLabel[p.status]}`} onMenu={onMenu}>
-        <button className="btn ghost sm" onClick={() => open(<WorkLogForm projects={projects} defaultProject={p.id} tasks={p.tasks} onDone={reload} />)}><Icon name="bolt" /> Catat</button>
+        <button className="btn ghost sm" onClick={() => open(<WorkLogForm projects={projects} defaultProject={p.id} tasks={p.tasks} onDone={reload} />)}><Icon name="bolt" /> Log</button>
         <button className="btn sm" onClick={() => open(<ProjectForm edit={p} onDone={reload} />)}><Icon name="edit" /> Edit</button>
       </Topbar>
 
@@ -52,19 +52,19 @@ export default function ProjectDetail({ onMenu }) {
           <h2>{p.name}</h2>
           {p.description && <p style={{ color:'var(--muted)', marginTop:5, maxWidth:560, lineHeight:1.5 }}>{p.description}</p>}
           <div className="dmeta">
-            <div><span>TOTAL JAM</span><b>{hrs(p.total_hours)}</b></div>
+            <div><span>TOTAL HOURS</span><b>{hrs(p.total_hours)}</b></div>
             <div><span>BILLABLE</span><b>{hrs(p.billable_hours)}</b></div>
-            <div><span>TASK</span><b>{p.done_tasks}/{p.total_tasks}</b></div>
-            {paid && <div><span>{p.rate_type === 'hourly' ? 'RATE/JAM' : 'NILAI'}</span><b>{money(p.rate, p.currency)}</b></div>}
+            <div><span>TASKS</span><b>{p.done_tasks}/{p.total_tasks}</b></div>
+            {paid && <div><span>{p.rate_type === 'hourly' ? 'RATE/HOUR' : 'VALUE'}</span><b>{money(p.rate, p.currency)}</b></div>}
           </div>
         </div>
       </div>
 
       {paid && (
         <div className="grid3" style={{ marginBottom:16 }}>
-          <div className="panel" style={{ borderLeft:'3px solid var(--green)' }}><div style={{ fontSize:11.5, color:'var(--muted)' }}>Est. Nilai Proyek</div><div style={{ fontSize:20, fontWeight:800, marginTop:4 }}>{money(p.est_value, p.currency)}</div></div>
-          <div className="panel" style={{ borderLeft:'3px solid var(--brand)' }}><div style={{ fontSize:11.5, color:'var(--muted)' }}>Sudah Dibayar</div><div style={{ fontSize:20, fontWeight:800, marginTop:4, color:'var(--green)' }}>{money(p.paid_amount, p.currency)}</div></div>
-          <div className="panel" style={{ borderLeft:'3px solid var(--orange)' }}><div style={{ fontSize:11.5, color:'var(--muted)' }}>Belum Dibayar</div><div style={{ fontSize:20, fontWeight:800, marginTop:4, color:'var(--orange)' }}>{money(p.unpaid_amount, p.currency)}</div></div>
+          <div className="panel" style={{ borderLeft:'3px solid var(--green)' }}><div style={{ fontSize:11.5, color:'var(--muted)' }}>Est. Project Value</div><div style={{ fontSize:20, fontWeight:800, marginTop:4 }}>{money(p.est_value, p.currency)}</div></div>
+          <div className="panel" style={{ borderLeft:'3px solid var(--brand)' }}><div style={{ fontSize:11.5, color:'var(--muted)' }}>Paid</div><div style={{ fontSize:20, fontWeight:800, marginTop:4, color:'var(--green)' }}>{money(p.paid_amount, p.currency)}</div></div>
+          <div className="panel" style={{ borderLeft:'3px solid var(--orange)' }}><div style={{ fontSize:11.5, color:'var(--muted)' }}>Unpaid</div><div style={{ fontSize:20, fontWeight:800, marginTop:4, color:'var(--orange)' }}>{money(p.unpaid_amount, p.currency)}</div></div>
         </div>
       )}
 
@@ -75,7 +75,7 @@ export default function ProjectDetail({ onMenu }) {
           <div style={{ marginBottom:12 }}><button className="btn ghost sm" onClick={() => open(<TaskForm projects={projects} defaultProject={p.id} onDone={reload} />)}><Icon name="plus" /> Task</button></div>
           {p.tasks.length ? p.tasks.map(t => (
             <div className="task-row" key={t.id}>
-              <div className={`tick ${t.status === 'done' ? 'on' : t.status === 'doing' ? 'doing' : ''}`} onClick={() => cycleTask(t)} title="Klik untuk ubah status">
+              <div className={`tick ${t.status === 'done' ? 'on' : t.status === 'doing' ? 'doing' : ''}`} onClick={() => cycleTask(t)} title="Click to change status">
                 {t.status === 'done' ? <Icon name="check" /> : t.status === 'doing' ? <Icon name="play" /> : null}
               </div>
               <div className={`tt ${t.status === 'done' ? 'done' : ''}`}>
@@ -84,13 +84,13 @@ export default function ProjectDetail({ onMenu }) {
               </div>
               <span className="rowact"><button onClick={() => open(<TaskForm edit={t} projects={projects} onDone={reload} />)} title="Edit task" aria-label="Edit task"><Icon name="edit" /></button></span>
             </div>
-          )) : <Empty icon="check-sq" action={<button className="btn sm" onClick={() => open(<TaskForm projects={projects} defaultProject={p.id} onDone={reload} />)}><Icon name="plus" /> Task Pertama</button>}>Belum ada task</Empty>}
+          )) : <Empty icon="check-sq" action={<button className="btn sm" onClick={() => open(<TaskForm projects={projects} defaultProject={p.id} onDone={reload} />)}><Icon name="plus" /> First Task</button>}>No tasks yet</Empty>}
         </>
       )}
 
       {tab === 'worklog' && (
         <div className="panel">
-          <h3><span className="tl"><Icon name="clock" /> Work Log</span><button className="btn ghost sm" onClick={() => open(<WorkLogForm projects={projects} defaultProject={p.id} tasks={p.tasks} onDone={reload} />)}><Icon name="plus" /> Catat</button></h3>
+          <h3><span className="tl"><Icon name="clock" /> Work Log</span><button className="btn ghost sm" onClick={() => open(<WorkLogForm projects={projects} defaultProject={p.id} tasks={p.tasks} onDone={reload} />)}><Icon name="plus" /> Log</button></h3>
           {p.work_logs.length ? (
             <div className="tl">
               {p.work_logs.map(l => (
@@ -106,7 +106,7 @@ export default function ProjectDetail({ onMenu }) {
                 </div>
               ))}
             </div>
-          ) : <Empty icon="clock" action={<button className="btn sm" onClick={() => open(<WorkLogForm projects={projects} defaultProject={p.id} tasks={p.tasks} onDone={reload} />)}><Icon name="bolt" /> Catat Kerjaan</button>}>Belum ada log</Empty>}
+          ) : <Empty icon="clock" action={<button className="btn sm" onClick={() => open(<WorkLogForm projects={projects} defaultProject={p.id} tasks={p.tasks} onDone={reload} />)}><Icon name="bolt" /> Log Work</button>}>No logs yet</Empty>}
         </div>
       )}
 
@@ -115,24 +115,24 @@ export default function ProjectDetail({ onMenu }) {
           <h3 style={{ padding:'14px 16px 0' }}><span className="tl"><Icon name="wallet" /> Payments</span><button className="btn ghost sm" style={{ marginRight:16 }} onClick={() => open(<PaymentForm projects={projects} defaultProject={p.id} onDone={reload} />)}><Icon name="plus" /> Payment</button></h3>
           <DataTable rows={p.payments} cols={[
             { h:'Label', title:1, cell:x => x.label || '—' },
-            { h:'Jumlah', cell:x => money(x.amount, x.currency) },
+            { h:'Amount', cell:x => money(x.amount, x.currency) },
             { h:'Status', cell:x => <Badge cls={payClass[x.status]}>{payLabel[x.status]}</Badge> },
-            { h:'Invoice', cell:x => fmtDate(x.invoice_date) },
-            { h:'Dibayar', cell:x => fmtDate(x.paid_date) },
+            { h:'Invoiced', cell:x => fmtDate(x.invoice_date) },
+            { h:'Paid', cell:x => fmtDate(x.paid_date) },
             { h:'', cell:x => (
               <span className="rowact">
-                {x.status !== 'paid' && <button onClick={async () => { await api.markPaid(x.id); reload(); }} title="Tandai lunas" aria-label="Tandai lunas"><Icon name="check" /></button>}
+                {x.status !== 'paid' && <button onClick={async () => { await api.markPaid(x.id); reload(); }} title="Mark as paid" aria-label="Mark as paid"><Icon name="check" /></button>}
                 <button onClick={() => open(<PaymentForm edit={x} projects={projects} onDone={reload} />)} title="Edit payment" aria-label="Edit payment"><Icon name="edit" /></button>
               </span>
             ) },
-          ]} cardTitle={x => x.label || money(x.amount, x.currency)} empty="Belum ada payment" />
+          ]} cardTitle={x => x.label || money(x.amount, x.currency)} empty="No payments yet" />
         </div>
       )}
 
       {tab === 'notes' && (
         <div className="panel">
           <h3><span className="tl"><Icon name="note" /> Notes</span><button className="btn ghost sm" onClick={() => open(<ProjectForm edit={p} onDone={reload} />)}><Icon name="edit" /> Edit</button></h3>
-          {p.notes ? <div style={{ whiteSpace:'pre-wrap', lineHeight:1.6, fontSize:13 }}>{p.notes}</div> : <Empty icon="note">Belum ada catatan. Klik Edit untuk nambah.</Empty>}
+          {p.notes ? <div style={{ whiteSpace:'pre-wrap', lineHeight:1.6, fontSize:13 }}>{p.notes}</div> : <Empty icon="note">No notes yet. Click Edit to add some.</Empty>}
         </div>
       )}
     </>

@@ -34,9 +34,9 @@ export function StoreProvider({ children }) {
 
   const value = {
     dashboard, projects, loading, error, toasts, toast, refresh,
-    createProject: (d) => withRefresh(() => api.createProject(d), 'Project dibuat'),
-    updateProject: (id, d) => withRefresh(() => api.updateProject(id, d), 'Project diperbarui'),
-    deleteProject: (id) => withRefresh(() => api.deleteProject(id), 'Project dihapus'),
+    createProject: (d) => withRefresh(() => api.createProject(d), 'Project created'),
+    updateProject: (id, d) => withRefresh(() => api.updateProject(id, d), 'Project updated'),
+    deleteProject: (id) => withRefresh(() => api.deleteProject(id), 'Project deleted'),
     pinProject: (id) => withRefresh(() => api.pinProject(id)),
   };
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

@@ -28,7 +28,7 @@ r.get('/', ah(async (req, res) => {
 r.post('/', ah(async (req, res) => {
   const b = req.body;
   requireFields(b, ['project_id', 'description']);
-  checkNumber(b.hours, 'Jam kerja', { notNegative: true });
+  checkNumber(b.hours, 'Hours', { notNegative: true });
   const w = (await query(`INSERT INTO work_logs (project_id,task_id,log_date,description,hours,billable)
     VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`, [b.project_id,b.task_id||null,b.log_date||new Date(),b.description,b.hours||0,!!b.billable])).rows[0];
   res.status(201).json(w);
@@ -36,7 +36,7 @@ r.post('/', ah(async (req, res) => {
 
 r.put('/:id', ah(async (req, res) => {
   const b = req.body;
-  checkNumber(b.hours, 'Jam kerja', { notNegative: true });
+  checkNumber(b.hours, 'Hours', { notNegative: true });
   const w = (await query(`UPDATE work_logs SET task_id=$2,log_date=COALESCE($3,log_date),description=COALESCE($4,description),hours=COALESCE($5,hours),billable=$6 WHERE id=$1 RETURNING *`,
     [req.params.id,b.task_id||null,b.log_date,b.description,b.hours,!!b.billable])).rows[0];
   if (!w) throw new ApiError(404, 'Work log not found');

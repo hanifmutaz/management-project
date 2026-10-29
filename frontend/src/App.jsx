@@ -24,11 +24,11 @@ function PasswordGate({ onSubmit }) {
   return (
     <div className="center-load" style={{ textAlign:'center', padding:20 }}>
       <div style={{ maxWidth:340, width:'100%' }}>
-        <b>⌘ MUTAZ OS — Terkunci</b>
-        <p style={{ color:'var(--muted)', margin:'8px 0 16px', fontSize:12.5, lineHeight:1.6 }}>Masukin password buat lanjut.</p>
+        <b>⌘ MUTAZ OS — Locked</b>
+        <p style={{ color:'var(--muted)', margin:'8px 0 16px', fontSize:12.5, lineHeight:1.6 }}>Enter the password to continue.</p>
         <form onSubmit={(e) => { e.preventDefault(); onSubmit(pw); }} style={{ display:'flex', gap:8 }}>
           <input type="password" autoFocus value={pw} onChange={e => setPw(e.target.value)} placeholder="Password" style={{ flex:1 }} />
-          <button className="btn" type="submit">Masuk</button>
+          <button className="btn" type="submit">Unlock</button>
         </form>
       </div>
     </div>
@@ -78,8 +78,8 @@ function Shell() {
     <div className="center-load" style={{ textAlign:'center', padding:20 }}>
       <Icon name="x" size="xl" />
       <div style={{ maxWidth:420 }}>
-        <b>Gagal konek ke backend</b>
-        <p style={{ color:'var(--muted)', marginTop:8, fontSize:12.5, lineHeight:1.6 }}>{error}<br />Pastikan backend jalan di <code>localhost:4000</code> & database sudah di-seed.</p>
+        <b>Couldn&rsquo;t reach the backend</b>
+        <p style={{ color:'var(--muted)', marginTop:8, fontSize:12.5, lineHeight:1.6 }}>{error}<br />Make sure the backend is running at <code>localhost:4000</code> and the database is seeded.</p>
       </div>
     </div>
   );
@@ -103,7 +103,7 @@ function Shell() {
         </main>
       </div>
       <BottomNav />
-      <button className="fab" onClick={() => open(<WorkLogForm projects={projects} />)} title="Catat kerjaan" aria-label="Catat kerjaan"><Icon name="bolt" /></button>
+      <button className="fab" onClick={() => open(<WorkLogForm projects={projects} />)} title="Log work" aria-label="Log work"><Icon name="bolt" /></button>
       {cmd && <CommandPalette onClose={() => setCmd(false)} />}
       <ToastHost />
     </>

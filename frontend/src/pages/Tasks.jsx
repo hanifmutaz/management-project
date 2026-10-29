@@ -25,22 +25,22 @@ export default function Tasks({ onMenu }) {
   };
   const groups = { doing: [], todo: [], done: [] };
   tasks.forEach(t => groups[t.status]?.push(t));
-  const order = [['doing', 'Sedang Dikerjakan'], ['todo', 'To Do'], ['done', 'Selesai']];
+  const order = [['doing', 'In Progress'], ['todo', 'To Do'], ['done', 'Done']];
 
   return (
     <>
-      <Topbar title={<h1>Tasks</h1>} sub={`${tasks.filter(t => t.status !== 'done').length} aktif`} onMenu={onMenu}>
+      <Topbar title={<h1>Tasks</h1>} sub={`${tasks.filter(t => t.status !== 'done').length} active`} onMenu={onMenu}>
         <button className="btn sm" onClick={() => open(<TaskForm projects={projects} onDone={reload} />)}><Icon name="plus" /> Task</button>
       </Topbar>
       <div className="filters">
-        <select value={proj} onChange={e => setProj(e.target.value)}><option value="">Semua Project</option>{projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}</select>
+        <select value={proj} onChange={e => setProj(e.target.value)}><option value="">All Projects</option>{projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}</select>
       </div>
       {tasks.length ? order.map(([st, label]) => groups[st].length > 0 && (
         <div key={st} style={{ marginBottom:18 }}>
           <div className="daygroup"><span className="dh">{label}</span> {groups[st].length}</div>
           {groups[st].map(t => (
             <div className="task-row" key={t.id}>
-              <div className={`tick ${t.status === 'done' ? 'on' : t.status === 'doing' ? 'doing' : ''}`} onClick={() => cycle(t)} title="Klik ubah status">
+              <div className={`tick ${t.status === 'done' ? 'on' : t.status === 'doing' ? 'doing' : ''}`} onClick={() => cycle(t)} title="Click to change status">
                 {t.status === 'done' ? <Icon name="check" /> : t.status === 'doing' ? <Icon name="play" /> : null}
               </div>
               <div className={`tt ${t.status === 'done' ? 'done' : ''}`}>
@@ -51,7 +51,7 @@ export default function Tasks({ onMenu }) {
             </div>
           ))}
         </div>
-      )) : <Empty icon="check-sq" action={<button className="btn" onClick={() => open(<TaskForm projects={projects} onDone={reload} />)}><Icon name="plus" /> Task Baru</button>}>Belum ada task</Empty>}
+      )) : <Empty icon="check-sq" action={<button className="btn" onClick={() => open(<TaskForm projects={projects} onDone={reload} />)}><Icon name="plus" /> New Task</button>}>No tasks yet</Empty>}
     </>
   );
 }

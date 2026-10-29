@@ -32,13 +32,13 @@ export default function WorkLog({ onMenu }) {
 
   return (
     <>
-      <Topbar title={<h1>Work Log</h1>} sub={`Rekam jejak kerjaan — total ${hrs(totalHours)}`} onMenu={onMenu}>
+      <Topbar title={<h1>Work Log</h1>} sub={`Work history — total ${hrs(totalHours)}`} onMenu={onMenu}>
         <button className="btn ghost sm" onClick={() => exportWorkLog(logs)}><Icon name="download" /> Export</button>
-        <button className="btn sm" onClick={() => open(<WorkLogForm projects={projects} onDone={reload} />)}><Icon name="bolt" /> Catat</button>
+        <button className="btn sm" onClick={() => open(<WorkLogForm projects={projects} onDone={reload} />)}><Icon name="bolt" /> Log</button>
       </Topbar>
       <div className="filters">
-        <select value={proj} onChange={e => setProj(e.target.value)}><option value="">Semua Project</option>{projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}</select>
-        <label className="chk" style={{ padding:'0 4px' }}><input type="checkbox" checked={billable} onChange={e => setBillable(e.target.checked)} /> Billable saja</label>
+        <select value={proj} onChange={e => setProj(e.target.value)}><option value="">All Projects</option>{projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}</select>
+        <label className="chk" style={{ padding:'0 4px' }}><input type="checkbox" checked={billable} onChange={e => setBillable(e.target.checked)} /> Billable only</label>
       </div>
       {dates.length ? dates.map(d => {
         const dayHours = groups[d].reduce((a, l) => a + Number(l.hours), 0);
@@ -63,7 +63,7 @@ export default function WorkLog({ onMenu }) {
             </div>
           </div>
         );
-      }) : <Empty icon="clock" action={<button className="btn" onClick={() => open(<WorkLogForm projects={projects} onDone={reload} />)}><Icon name="bolt" /> Catat Kerjaan</button>}>Belum ada catatan kerjaan</Empty>}
+      }) : <Empty icon="clock" action={<button className="btn" onClick={() => open(<WorkLogForm projects={projects} onDone={reload} />)}><Icon name="bolt" /> Log Work</button>}>No work logged yet</Empty>}
     </>
   );
 }

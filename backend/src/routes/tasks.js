@@ -20,7 +20,7 @@ r.post('/', ah(async (req, res) => {
   const b = req.body;
   requireFields(b, ['project_id', 'title']);
   checkEnum(b.status, 'Status', STATUSES);
-  checkEnum(b.priority, 'Prioritas', PRIORITIES);
+  checkEnum(b.priority, 'Priority', PRIORITIES);
   const t = (await query(`INSERT INTO tasks (project_id,title,status,priority,due_date,tags)
     VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`, [b.project_id,b.title,b.status||'todo',b.priority||'medium',b.due_date,b.tags||[]])).rows[0];
   res.status(201).json(t);
@@ -37,7 +37,7 @@ r.patch('/:id/status', ah(async (req, res) => {
 r.put('/:id', ah(async (req, res) => {
   const b = req.body;
   checkEnum(b.status, 'Status', STATUSES);
-  checkEnum(b.priority, 'Prioritas', PRIORITIES);
+  checkEnum(b.priority, 'Priority', PRIORITIES);
   const t = (await query(`UPDATE tasks SET title=COALESCE($2,title),status=COALESCE($3,status),priority=COALESCE($4,priority),due_date=$5,tags=COALESCE($6,tags) WHERE id=$1 RETURNING *`,
     [req.params.id,b.title,b.status,b.priority,b.due_date,b.tags])).rows[0];
   if (!t) throw new ApiError(404, 'Task not found');

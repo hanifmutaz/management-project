@@ -1,10 +1,10 @@
-export const typeLabel = { office:'Kantor', freelance:'Freelance', parttime:'Part-time', personal:'Personal', kuliah:'Kuliah' };
+export const typeLabel = { office:'Office', freelance:'Freelance', parttime:'Part-time', personal:'Personal', kuliah:'Study' };
 export const typeClass = { office:'b-blue', freelance:'b-green', parttime:'b-purple', personal:'b-yellow', kuliah:'b-cyan' };
 export const typeColor = { office:'#5b8cff', freelance:'#34d399', parttime:'#9b6bff', personal:'#fbbf24', kuliah:'#22d3ee' };
 export const typeIcon = { office:'briefcase', freelance:'wallet', parttime:'clock', personal:'user', kuliah:'book' };
-// Shade per kategori — tiap project dalam 1 kategori pake salah satu warna ini, biar dari
-// jauh langsung kebaca "ini kantor/freelance/dst" (hue sama), tapi masih bisa dibedain antar
-// project (shade beda). Dipake di color-picker form project (lihat Forms.jsx).
+// Shades per category — every project in a category picks one of these colors, so a glance
+// tells you "this is office/freelance/etc." (same hue) while projects stay distinguishable
+// (different shade). Used by the project form's color picker (see Forms.jsx).
 export const typeShades = {
   office:    ['#5b8cff', '#3b6fe0', '#7ba0ff', '#274ea8', '#8fb3ff', '#4a7ff0'],
   freelance: ['#34d399', '#189367', '#5ee0b0', '#0f7a53', '#7bead0', '#22b880'],
@@ -26,7 +26,7 @@ export const payLabel = { unpaid:'Unpaid', invoiced:'Invoiced', paid:'Paid' };
 export const payClass = { unpaid:'b-orange', invoiced:'b-yellow', paid:'b-green' };
 
 export const num = (v) => Math.round(Number(v) || 0);
-export const hrs = (v) => { const n = Number(v) || 0; return (Number.isInteger(n) ? n : n.toFixed(1)) + 'j'; };
+export const hrs = (v) => { const n = Number(v) || 0; return (Number.isInteger(n) ? n : n.toFixed(1)) + 'h'; };
 
 export function money(v, cur = 'IDR') {
   const n = Number(v) || 0;
@@ -36,43 +36,51 @@ export function money(v, cur = 'IDR') {
 export function moneyShort(v, cur = 'IDR') {
   const n = Number(v) || 0;
   if (cur !== 'IDR') return money(n, cur);
-  if (n >= 1e9) return 'Rp' + (n / 1e9).toFixed(1) + 'M';
-  if (n >= 1e6) return 'Rp' + (n / 1e6).toFixed(1) + 'jt';
-  if (n >= 1e3) return 'Rp' + Math.round(n / 1e3) + 'rb';
+  if (n >= 1e9) return 'Rp' + (n / 1e9).toFixed(1) + 'B';
+  if (n >= 1e6) return 'Rp' + (n / 1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return 'Rp' + Math.round(n / 1e3) + 'K';
   return 'Rp' + n;
 }
 
-const MON = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-const DAY = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+export const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DAY = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+// Date-only strings ("2026-10-29") are parsed as LOCAL dates; plain new Date("2026-10-29")
+// is UTC midnight, which lands on the previous day in UTC- timezones.
+function parseDate(iso) {
+  if (!iso) return null;
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso).slice(0, 10));
+  const d = m && String(iso).length === 10 ? new Date(+m[1], +m[2] - 1, +m[3]) : new Date(iso);
+  return isNaN(d) ? null : d;
+}
 export function monthYear(d) { return `${MON[d.getMonth()]} ${d.getFullYear()}`; }
 export function fmtDate(iso) {
   if (!iso) return '—';
-  const d = new Date(iso); if (isNaN(d)) return iso;
+  const d = parseDate(iso); if (!d) return iso;
   return `${String(d.getDate()).padStart(2,'0')} ${MON[d.getMonth()]}`;
 }
 export function fmtDateFull(iso) {
   if (!iso) return '—';
-  const d = new Date(iso); if (isNaN(d)) return iso;
+  const d = parseDate(iso); if (!d) return iso;
   const t = new Date(); t.setHours(0,0,0,0);
   const dd = new Date(d); dd.setHours(0,0,0,0);
   const diff = Math.round((t - dd) / 86400000);
-  if (diff === 0) return 'Hari ini';
-  if (diff === 1) return 'Kemarin';
+  if (diff === 0) return 'Today';
+  if (diff === 1) return 'Yesterday';
   return `${DAY[d.getDay()]}, ${String(d.getDate()).padStart(2,'0')} ${MON[d.getMonth()]} ${d.getFullYear()}`;
 }
-export function dowShort(iso) { const d = new Date(iso); return isNaN(d) ? '' : DAY[d.getDay()]; }
+export function dowShort(iso) { const d = parseDate(iso); return d ? DAY[d.getDay()] : ''; }
 export function dateInput(iso) {
   if (!iso) return '';
-  const d = new Date(iso); if (isNaN(d)) return '';
-  return d.toISOString().slice(0, 10);
+  const d = parseDate(iso); if (!d) return '';
+  return localISO(d);
 }
-export const todayInput = () => new Date().toISOString().slice(0, 10);
+export const todayInput = () => localISO();
 
 export function idleText(days) {
   if (days == null) return '';
-  if (days <= 0) return 'Hari ini';
-  if (days === 1) return 'Kemarin';
-  return `${days} hari lalu`;
+  if (days <= 0) return 'Today';
+  if (days === 1) return 'Yesterday';
+  return `${days}d ago`;
 }
 export function idleColor(days) {
   if (days >= 14) return 'var(--red)';
@@ -80,44 +88,55 @@ export function idleColor(days) {
   if (days >= 4) return 'var(--yellow)';
   return 'var(--muted)';
 }
-const DAYFULL = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-// Label hari buat grouping "Upcoming": Hari ini / Besok / nama hari (< 7 hari) / tanggal biasa
+const DAYFULL = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+// Day label for grouping "Upcoming": Today / Tomorrow / weekday name (< 7 days) / plain date
 export function dayLabel(iso) {
   if (!iso) return '';
-  const d = new Date(iso); if (isNaN(d)) return iso;
+  const d = parseDate(iso); if (!d) return iso;
   const t = new Date(); t.setHours(0, 0, 0, 0);
   const dd = new Date(d); dd.setHours(0, 0, 0, 0);
   const diff = Math.round((dd - t) / 86400000);
-  if (diff === 0) return 'Hari ini';
-  if (diff === 1) return 'Besok';
+  if (diff === 0) return 'Today';
+  if (diff === 1) return 'Tomorrow';
   if (diff > 1 && diff < 7) return DAYFULL[d.getDay()];
   return fmtDate(iso);
 }
-// "X lalu" relatif dari timestamp (buat Kerjaan Terakhir)
+// Relative "X ago" from a timestamp (used by Recent Work)
 export function timeAgo(iso) {
   if (!iso) return '';
   const d = new Date(iso); if (isNaN(d)) return '';
   const min = Math.floor((Date.now() - d.getTime()) / 60000);
-  if (min < 1) return 'baru aja';
-  if (min < 60) return min + 'm lalu';
+  if (min < 1) return 'just now';
+  if (min < 60) return min + 'm ago';
   const hr = Math.floor(min / 60);
-  if (hr < 24) return hr + 'j lalu';
+  if (hr < 24) return hr + 'h ago';
   const day = Math.floor(hr / 24);
-  if (day < 7) return day + 'h lalu';
+  if (day < 7) return day + 'd ago';
   return fmtDate(iso);
 }
 export function greeting() {
   const h = new Date().getHours();
-  if (h < 11) return 'Gas pagi';
-  if (h < 15) return 'Otw siang';
-  if (h < 19) return 'Lanjut sore';
-  return 'Begadang lagi';
+  if (h >= 5 && h < 12) return 'Good morning';
+  if (h >= 12 && h < 18) return 'Good afternoon';
+  if (h >= 18 && h < 22) return 'Good evening';
+  return 'Burning the midnight oil';
 }
 // delta % antara dua angka
 export function delta(cur, prev) {
   cur = Number(cur) || 0; prev = Number(prev) || 0;
-  if (prev === 0) return cur > 0 ? { up: true, text: 'baru' } : null;
+  if (prev === 0) return cur > 0 ? { up: true, text: 'new' } : null;
   const pct = Math.round((cur - prev) / prev * 100);
-  if (pct === 0) return { flat: true, text: 'sama' };
+  if (pct === 0) return { flat: true, text: 'same' };
   return { up: pct > 0, text: (pct > 0 ? '+' : '') + pct + '%' };
+}
+
+// Local-time YYYY-MM-DD (toISOString() would give the UTC date, which is "yesterday" in the
+// early morning for UTC+ timezones).
+export function localISO(d = new Date()) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+// "2026-10-27" -> "Oct 27" without going through Date parsing (no timezone shift).
+export function weekLabel(iso) {
+  const [, m, d] = String(iso).split('-');
+  return `${MON[+m - 1]} ${+d}`;
 }

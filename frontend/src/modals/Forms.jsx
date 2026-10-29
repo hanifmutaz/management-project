@@ -31,9 +31,9 @@ function Foot({ onDelete, onSave, busy }) {
   const { close } = useModal();
   return (
     <div className="modal-foot">
-      <div>{onDelete && <button className="btn danger sm" onClick={onDelete}><Icon name="trash" /> Hapus</button>}</div>
-      <div className="row"><button className="btn ghost" onClick={close}>Batal</button>
-        <button className="btn" onClick={onSave} disabled={busy}><Icon name="check" /> {busy ? '...' : 'Simpan'}</button></div>
+      <div>{onDelete && <button className="btn danger sm" onClick={onDelete}><Icon name="trash" /> Delete</button>}</div>
+      <div className="row"><button className="btn ghost" onClick={close}>Cancel</button>
+        <button className="btn" onClick={onSave} disabled={busy}><Icon name="check" /> {busy ? '...' : 'Save'}</button></div>
     </div>
   );
 }
@@ -68,34 +68,34 @@ export function ProjectForm({ edit, onDone }) {
   const del = async () => { await deleteProject(edit.id); onDone && await onDone(); close(); };
   return (
     <>
-      <h3><Icon name="folder" /> {edit ? 'Edit' : 'Project Baru'}</h3>
-      <Field label="Nama Project" req><input className={t && !f.name.trim() ? 'err' : ''} value={f.name} onChange={set('name')} placeholder="cth: Landing Page UMKM" autoFocus /></Field>
+      <h3><Icon name="folder" /> {edit ? 'Edit Project' : 'New Project'}</h3>
+      <Field label="Project Name" req><input className={t && !f.name.trim() ? 'err' : ''} value={f.name} onChange={set('name')} placeholder="e.g. SME Landing Page" autoFocus /></Field>
       <div className="f2">
-        <Field label="Type"><select value={f.type} onChange={setType}><option value="office">Kantor</option><option value="freelance">Freelance</option><option value="parttime">Part-time</option><option value="kuliah">Kuliah</option><option value="personal">Personal</option></select></Field>
+        <Field label="Type"><select value={f.type} onChange={setType}><option value="office">Office</option><option value="freelance">Freelance</option><option value="parttime">Part-time</option><option value="kuliah">Study</option><option value="personal">Personal</option></select></Field>
         <Field label="Status"><select value={f.status} onChange={set('status')}><option value="active">Active</option><option value="on_hold">On Hold</option><option value="done">Done</option><option value="archived">Archived</option></select></Field>
       </div>
       {isPaid && (
         <>
-          <div className="note"><Icon name="wallet" /> Info bayaran buat tracking income.</div>
-          <Field label="Client / Pemberi Kerja"><input value={f.client_name} onChange={set('client_name')} placeholder="cth: Toko Berkah" /></Field>
+          <div className="note"><Icon name="wallet" /> Payment info for income tracking.</div>
+          <Field label="Client"><input value={f.client_name} onChange={set('client_name')} placeholder="e.g. Acme Store" /></Field>
           <div className="f3">
-            <Field label="Rate Type"><select value={f.rate_type} onChange={set('rate_type')}><option value="none">—</option><option value="hourly">Per Jam</option><option value="fixed">Fixed</option></select></Field>
-            <Field label={f.rate_type === 'hourly' ? 'Rate / Jam' : 'Nilai Total'}><input type="number" value={f.rate} onChange={set('rate')} placeholder="0" /></Field>
+            <Field label="Rate Type"><select value={f.rate_type} onChange={set('rate_type')}><option value="none">—</option><option value="hourly">Per Hour</option><option value="fixed">Fixed</option></select></Field>
+            <Field label={f.rate_type === 'hourly' ? 'Rate / Hour' : 'Total Value'}><input type="number" value={f.rate} onChange={set('rate')} placeholder="0" /></Field>
             <Field label="Currency"><select value={f.currency} onChange={set('currency')}><option>IDR</option><option>USD</option><option>SGD</option></select></Field>
           </div>
         </>
       )}
       <div className="f2">
-        <Field label="Mulai"><input type="date" value={f.start_date} onChange={set('start_date')} /></Field>
+        <Field label="Start"><input type="date" value={f.start_date} onChange={set('start_date')} /></Field>
         <Field label="Target"><input type="date" value={f.due_date} onChange={set('due_date')} /></Field>
       </div>
-      <Field label="Warna">
+      <Field label="Color">
         <div className="color-row">{shadesFor(f.type).map(c => <div key={c} className={`sw ${f.color === c ? 'on' : ''}`} style={{ background: c }} onClick={() => setF({ ...f, color: c })} />)}</div>
-        <div style={{ color:'var(--faint)', fontSize:10.5, marginTop:6 }}>Shade ngikut kategori "{typeLabel[f.type]}" biar konsisten sama project lain di kategori yang sama.</div>
+        <div style={{ color:'var(--faint)', fontSize:10.5, marginTop:6 }}>Shades follow the "{typeLabel[f.type]}" category so projects in the same category stay visually consistent.</div>
       </Field>
-      <Field label="Tags (pisah koma)"><input value={f.tags} onChange={set('tags')} placeholder="react, web" /></Field>
-      <Field label="Catatan / Notes"><textarea rows="2" value={f.notes} onChange={set('notes')} placeholder="Catatan bebas, keputusan, dll..." /></Field>
-      <Foot busy={busy} onSave={save} onDelete={edit ? () => open(<Confirm message={`Hapus project "${edit.name}" beserta semua task/log/payment-nya?`} onYes={del} />) : null} />
+      <Field label="Tags (comma-separated)"><input value={f.tags} onChange={set('tags')} placeholder="react, web" /></Field>
+      <Field label="Notes"><textarea rows="2" value={f.notes} onChange={set('notes')} placeholder="Free-form notes, decisions, etc..." /></Field>
+      <Foot busy={busy} onSave={save} onDelete={edit ? () => open(<Confirm message={`Delete project "${edit.name}" and all its tasks, logs and payments?`} onYes={del} />) : null} />
     </>
   );
 }
@@ -111,22 +111,22 @@ export function TaskForm({ edit, projects, defaultProject, onDone }) {
   const save = async () => {
     setT(true); if (!f.title.trim()) return; setBusy(true);
     const data = { ...f, due_date: f.due_date || null, tags: parseTags(f.tags) };
-    try { edit ? await api.updateTask(edit.id, data) : await api.createTask(data); toast(edit ? 'Task diperbarui' : 'Task dibuat'); await refresh(); onDone && onDone(); close(); }
+    try { edit ? await api.updateTask(edit.id, data) : await api.createTask(data); toast(edit ? 'Task updated' : 'Task created'); await refresh(); onDone && onDone(); close(); }
     catch (e) { toast(e.message, 'err'); setBusy(false); }
   };
-  const del = async () => { await api.deleteTask(edit.id); toast('Task dihapus'); await refresh(); onDone && onDone(); close(); };
+  const del = async () => { await api.deleteTask(edit.id); toast('Task deleted'); await refresh(); onDone && onDone(); close(); };
   return (
     <>
-      <h3><Icon name="check-sq" /> {edit ? 'Edit' : 'Task Baru'}</h3>
-      <Field label="Judul Task" req><input className={t && !f.title.trim() ? 'err' : ''} value={f.title} onChange={set('title')} placeholder="cth: Slicing halaman home" autoFocus /></Field>
+      <h3><Icon name="check-sq" /> {edit ? 'Edit Task' : 'New Task'}</h3>
+      <Field label="Task Title" req><input className={t && !f.title.trim() ? 'err' : ''} value={f.title} onChange={set('title')} placeholder="e.g. Build the home page layout" autoFocus /></Field>
       <Field label="Project" req><select value={f.project_id} onChange={set('project_id')} disabled={!!edit}>{projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}</select></Field>
       <div className="f3">
         <Field label="Status"><select value={f.status} onChange={set('status')}><option value="todo">To Do</option><option value="doing">Doing</option><option value="done">Done</option></select></Field>
-        <Field label="Prioritas"><select value={f.priority} onChange={set('priority')}><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></Field>
+        <Field label="Priority"><select value={f.priority} onChange={set('priority')}><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></Field>
         <Field label="Due"><input type="date" value={f.due_date} onChange={set('due_date')} /></Field>
       </div>
-      <Field label="Tags (pisah koma)"><input value={f.tags} onChange={set('tags')} placeholder="frontend, urgent" /></Field>
-      <Foot busy={busy} onSave={save} onDelete={edit ? () => open(<Confirm message={`Hapus task "${edit.title}"?`} onYes={del} />) : null} />
+      <Field label="Tags (comma-separated)"><input value={f.tags} onChange={set('tags')} placeholder="frontend, urgent" /></Field>
+      <Foot busy={busy} onSave={save} onDelete={edit ? () => open(<Confirm message={`Delete task "${edit.title}"?`} onYes={del} />) : null} />
     </>
   );
 }
@@ -142,25 +142,25 @@ export function WorkLogForm({ edit, projects, defaultProject, tasks = [], onDone
   const save = async () => {
     setT(true); if (!f.description.trim()) return; setBusy(true);
     const data = { ...f, task_id: f.task_id || null, hours: +f.hours || 0 };
-    try { edit ? await api.updateLog(edit.id, data) : await api.createLog(data); toast(edit ? 'Log diperbarui' : 'Kerjaan dicatat'); await refresh(); onDone && onDone(); close(); }
+    try { edit ? await api.updateLog(edit.id, data) : await api.createLog(data); toast(edit ? 'Log updated' : 'Work logged'); await refresh(); onDone && onDone(); close(); }
     catch (e) { toast(e.message, 'err'); setBusy(false); }
   };
-  const del = async () => { await api.deleteLog(edit.id); toast('Log dihapus'); await refresh(); onDone && onDone(); close(); };
+  const del = async () => { await api.deleteLog(edit.id); toast('Log deleted'); await refresh(); onDone && onDone(); close(); };
   const projTasks = tasks.filter(x => String(x.project_id) === String(f.project_id));
   return (
     <>
-      <h3><Icon name="bolt" /> {edit ? 'Edit' : 'Catat'} Kerjaan</h3>
-      <Field label="Apa yang dikerjain?" req><textarea rows="2" className={t && !f.description.trim() ? 'err' : ''} value={f.description} onChange={set('description')} placeholder="cth: Coding endpoint login + integrasi ke frontend" autoFocus /></Field>
+      <h3><Icon name="bolt" /> {edit ? 'Edit' : 'Log'} Work</h3>
+      <Field label="What did you work on?" req><textarea rows="2" className={t && !f.description.trim() ? 'err' : ''} value={f.description} onChange={set('description')} placeholder="e.g. Built the login endpoint and wired it to the frontend" autoFocus /></Field>
       <div className="f2">
         <Field label="Project" req><select value={f.project_id} onChange={set('project_id')}>{projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}</select></Field>
-        <Field label="Task (opsional)"><select value={f.task_id} onChange={set('task_id')}><option value="">— tanpa task —</option>{projTasks.map(x => <option key={x.id} value={x.id}>{x.title}</option>)}</select></Field>
+        <Field label="Task (optional)"><select value={f.task_id} onChange={set('task_id')}><option value="">— no task —</option>{projTasks.map(x => <option key={x.id} value={x.id}>{x.title}</option>)}</select></Field>
       </div>
       <div className="f2">
-        <Field label="Tanggal"><input type="date" value={f.log_date} onChange={set('log_date')} /></Field>
-        <Field label="Jam kerja"><input type="number" step="0.25" min="0" value={f.hours} onChange={set('hours')} /></Field>
+        <Field label="Date"><input type="date" value={f.log_date} onChange={set('log_date')} /></Field>
+        <Field label="Hours"><input type="number" step="0.25" min="0" value={f.hours} onChange={set('hours')} /></Field>
       </div>
-      <label className="chk" style={{ marginBottom:6 }}><input type="checkbox" checked={f.billable} onChange={(e) => setF({ ...f, billable: e.target.checked })} /> <Icon name="wallet" /> Billable (jam ini dibayar klien)</label>
-      <Foot busy={busy} onSave={save} onDelete={edit ? () => open(<Confirm message="Hapus work log ini?" onYes={del} />) : null} />
+      <label className="chk" style={{ marginBottom:6 }}><input type="checkbox" checked={f.billable} onChange={(e) => setF({ ...f, billable: e.target.checked })} /> <Icon name="wallet" /> Billable (hours paid by the client)</label>
+      <Foot busy={busy} onSave={save} onDelete={edit ? () => open(<Confirm message="Delete this work log?" onYes={del} />) : null} />
     </>
   );
 }
@@ -178,28 +178,28 @@ export function PaymentForm({ edit, projects, defaultProject, onDone }) {
   const save = async () => {
     setT(true); if (!f.amount) return; setBusy(true);
     const data = { ...f, amount: +f.amount || 0, invoice_date: f.invoice_date || null, paid_date: f.status === 'paid' ? (f.paid_date || todayInput()) : (f.paid_date || null) };
-    try { edit ? await api.updatePayment(edit.id, data) : await api.createPayment(data); toast(edit ? 'Payment diperbarui' : 'Payment dicatat'); await refresh(); onDone && onDone(); close(); }
+    try { edit ? await api.updatePayment(edit.id, data) : await api.createPayment(data); toast(edit ? 'Payment updated' : 'Payment recorded'); await refresh(); onDone && onDone(); close(); }
     catch (e) { toast(e.message, 'err'); setBusy(false); }
   };
-  const del = async () => { await api.deletePayment(edit.id); toast('Payment dihapus'); await refresh(); onDone && onDone(); close(); };
+  const del = async () => { await api.deletePayment(edit.id); toast('Payment deleted'); await refresh(); onDone && onDone(); close(); };
   return (
     <>
-      <h3><Icon name="wallet" /> {edit ? 'Edit' : 'Payment Baru'}</h3>
+      <h3><Icon name="wallet" /> {edit ? 'Edit Payment' : 'New Payment'}</h3>
       <Field label="Project" req><select value={f.project_id} onChange={set('project_id')}>{list.map(p => <option key={p.id} value={p.id}>{p.name}{p.client_name ? ` · ${p.client_name}` : ''}</option>)}</select></Field>
       <div className="f2">
-        <Field label="Label"><input value={f.label} onChange={set('label')} placeholder="cth: DP 50%, Termin 1" /></Field>
+        <Field label="Label"><input value={f.label} onChange={set('label')} placeholder="e.g. 50% deposit, Milestone 1" /></Field>
         <Field label="Status"><select value={f.status} onChange={set('status')}><option value="unpaid">Unpaid</option><option value="invoiced">Invoiced</option><option value="paid">Paid</option></select></Field>
       </div>
       <div className="f2">
-        <Field label="Jumlah" req><input type="number" className={t && !f.amount ? 'err' : ''} value={f.amount} onChange={set('amount')} placeholder="0" /></Field>
+        <Field label="Amount" req><input type="number" className={t && !f.amount ? 'err' : ''} value={f.amount} onChange={set('amount')} placeholder="0" /></Field>
         <Field label="Currency"><select value={f.currency} onChange={set('currency')}><option>IDR</option><option>USD</option><option>SGD</option></select></Field>
       </div>
       <div className="f2">
-        <Field label="Tgl Invoice"><input type="date" value={f.invoice_date} onChange={set('invoice_date')} /></Field>
-        <Field label="Tgl Dibayar"><input type="date" value={f.paid_date} onChange={set('paid_date')} /></Field>
+        <Field label="Invoice Date"><input type="date" value={f.invoice_date} onChange={set('invoice_date')} /></Field>
+        <Field label="Paid Date"><input type="date" value={f.paid_date} onChange={set('paid_date')} /></Field>
       </div>
-      <Field label="Catatan"><input value={f.note} onChange={set('note')} placeholder="opsional" /></Field>
-      <Foot busy={busy} onSave={save} onDelete={edit ? () => open(<Confirm message="Hapus payment ini?" onYes={del} />) : null} />
+      <Field label="Note"><input value={f.note} onChange={set('note')} placeholder="optional" /></Field>
+      <Foot busy={busy} onSave={save} onDelete={edit ? () => open(<Confirm message="Delete this payment?" onYes={del} />) : null} />
     </>
   );
 }
@@ -211,9 +211,9 @@ export function Confirm({ message, onYes }) {
   const yes = async () => { setBusy(true); try { await onYes(); close(); } catch { setBusy(false); } };
   return (
     <>
-      <h3><Icon name="trash" /> Konfirmasi</h3>
+      <h3><Icon name="trash" /> Confirm</h3>
       <p style={{ color:'var(--muted)', lineHeight:1.6, marginBottom:18 }}>{message}</p>
-      <div className="modal-foot"><div /><div className="row"><button className="btn ghost" onClick={close}>Batal</button><button className="btn danger" onClick={yes} disabled={busy}><Icon name="trash" /> {busy ? '...' : 'Hapus'}</button></div></div>
+      <div className="modal-foot"><div /><div className="row"><button className="btn ghost" onClick={close}>Cancel</button><button className="btn danger" onClick={yes} disabled={busy}><Icon name="trash" /> {busy ? '...' : 'Delete'}</button></div></div>
     </>
   );
 }

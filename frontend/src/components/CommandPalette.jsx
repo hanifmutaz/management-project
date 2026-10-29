@@ -21,19 +21,19 @@ export default function CommandPalette({ onClose }) {
 
   const items = useMemo(() => {
     const base = [
-      { group:'Aksi', icon:'plus', label:'Catat Kerjaan', sub:'log', run:() => act(() => open(<WorkLogForm projects={projects} />)) },
-      { group:'Aksi', icon:'folder', label:'Project Baru', sub:'new', run:() => act(() => open(<ProjectForm />)) },
-      { group:'Aksi', icon:'check-sq', label:'Task Baru', sub:'new', run:() => act(() => open(<TaskForm projects={projects} />)) },
-      { group:'Navigasi', icon:'grid', label:'Dashboard', sub:'g d', run:() => go('/') },
-      { group:'Navigasi', icon:'folder', label:'Projects', sub:'g p', run:() => go('/projects') },
-      { group:'Navigasi', icon:'check-sq', label:'Tasks', sub:'g t', run:() => go('/tasks') },
-      { group:'Navigasi', icon:'clock', label:'Work Log', sub:'g w', run:() => go('/worklog') },
-      { group:'Navigasi', icon:'calendar', label:'Timeline', sub:'g l', run:() => go('/timeline') },
-      { group:'Navigasi', icon:'wallet', label:'Finance', sub:'g f', run:() => go('/finance') },
-      { group:'Navigasi', icon:'chart', label:'Analytics', sub:'g a', run:() => go('/analytics') },
-      { group:'Tampilan', icon:'moon', label:'Toggle Dark / Light', run:() => act(() => { document.body.classList.toggle('light'); localStorage.setItem('mos_theme', document.body.classList.contains('light') ? 'light' : 'dark'); }) },
+      { group:'Actions', icon:'plus', label:'Log Work', sub:'log', run:() => act(() => open(<WorkLogForm projects={projects} />)) },
+      { group:'Actions', icon:'folder', label:'New Project', sub:'new', run:() => act(() => open(<ProjectForm />)) },
+      { group:'Actions', icon:'check-sq', label:'New Task', sub:'new', run:() => act(() => open(<TaskForm projects={projects} />)) },
+      { group:'Navigation', icon:'grid', label:'Dashboard', sub:'g d', run:() => go('/') },
+      { group:'Navigation', icon:'folder', label:'Projects', sub:'g p', run:() => go('/projects') },
+      { group:'Navigation', icon:'check-sq', label:'Tasks', sub:'g t', run:() => go('/tasks') },
+      { group:'Navigation', icon:'clock', label:'Work Log', sub:'g w', run:() => go('/worklog') },
+      { group:'Navigation', icon:'calendar', label:'Timeline', sub:'g l', run:() => go('/timeline') },
+      { group:'Navigation', icon:'wallet', label:'Finance', sub:'g f', run:() => go('/finance') },
+      { group:'Navigation', icon:'chart', label:'Analytics', sub:'g a', run:() => go('/analytics') },
+      { group:'Appearance', icon:'moon', label:'Toggle Dark / Light', run:() => act(() => { document.body.classList.toggle('light'); localStorage.setItem('mos_theme', document.body.classList.contains('light') ? 'light' : 'dark'); }) },
     ];
-    const projItems = projects.map(p => ({ group:'Buka Project', icon:'folder', label:p.name, sub:typeLabel[p.type] || p.type, color:p.color, run:() => go('/projects/' + p.id) }));
+    const projItems = projects.map(p => ({ group:'Open Project', icon:'folder', label:p.name, sub:typeLabel[p.type] || p.type, color:p.color, run:() => go('/projects/' + p.id) }));
     const all = [...base, ...projItems];
     if (!q.trim()) return all;
     const ql = q.toLowerCase();
@@ -55,7 +55,7 @@ export default function CommandPalette({ onClose }) {
       <div className="cmdp">
         <div className="cin">
           <Icon name="search" />
-          <input ref={inputRef} value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={onKey} placeholder="Cari aksi, halaman, atau project..." />
+          <input ref={inputRef} value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={onKey} placeholder="Search actions, pages, or projects..." />
           <kbd>ESC</kbd>
         </div>
         <div className="clist">
@@ -71,7 +71,7 @@ export default function CommandPalette({ onClose }) {
                 </div>
               </div>
             );
-          }) : <div className="empty" style={{ padding: 30 }}><Icon name="search" size="lg" /><div className="et">Ga ada hasil</div></div>}
+          }) : <div className="empty" style={{ padding: 30 }}><Icon name="search" size="lg" /><div className="et">No results</div></div>}
         </div>
       </div>
     </div>
