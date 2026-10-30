@@ -9,7 +9,7 @@ import { PaymentForm } from '../modals/Forms.jsx';
 import { exportPayments } from '../lib/export.js';
 import { payLabel, payClass, money, moneyShort, fmtDate } from '../lib/format.js';
 
-export default function Finance({ onMenu }) {
+export default function Finance() {
   const { projects, refresh } = useStore();
   const { open } = useModal();
   const [payments, setPayments] = useState([]);
@@ -27,15 +27,15 @@ export default function Finance({ onMenu }) {
 
   return (
     <>
-      <Topbar title={<h1>Finance</h1>} sub="Freelance & part-time income" onMenu={onMenu}>
+      <Topbar title={<h1>Finance</h1>} sub="Freelance & part-time income">
         <button className="btn ghost sm" onClick={() => exportPayments(payments)}><Icon name="download" /> Export</button>
         <button className="btn sm" onClick={() => open(<PaymentForm projects={projects} onDone={reload} />)}><Icon name="plus" /> Payment</button>
       </Topbar>
       <div className="kpis">
-        <KpiCard label="Income This Month" value={moneyShort(thisMonth)} tag="paid · IDR" accent="acc-green" icon="wallet" />
-        <KpiCard label="Total Paid" value={moneyShort(paid)} tag="all time · IDR" accent="acc-blue" icon="check" />
-        <KpiCard label="Outstanding" value={moneyShort(unpaid)} tag="unpaid · IDR" accent="acc-orange" icon="clock" />
-        <KpiCard label="Total Entries" value={payments.length} tag="payments · all currencies" accent="acc-purple" icon="chart" />
+        <KpiCard label="Income This Month" value={moneyShort(thisMonth)} tag="paid · IDR" />
+        <KpiCard label="Total Paid" value={moneyShort(paid)} tag="all time · IDR" />
+        <KpiCard label="Outstanding" value={moneyShort(unpaid)} tag="unpaid · IDR" />
+        <KpiCard label="Total Entries" value={payments.length} tag="payments · all currencies" />
       </div>
       {payments.some(p => p.currency !== 'IDR') && (
         <p style={{ color:'var(--muted)', fontSize:12, marginTop:-8, marginBottom:16 }}>

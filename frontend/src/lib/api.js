@@ -1,3 +1,5 @@
+import { localISO } from './format.js';
+
 // In dev, Vite proxies /api to localhost:4000 (see vite.config.js). In prod, the
 // frontend and backend are separate Vercel projects, so point at the backend's URL
 // via VITE_API_URL (set in Vercel project settings → Environment Variables).
@@ -21,8 +23,9 @@ async function req(path, options = {}) {
   return res.json();
 }
 export const api = {
-  dashboard: () => req('/dashboard'),
-  analytics: () => req('/dashboard/analytics'),
+  // The server sends back data relative to the viewer's local "today" (see backend dashboard.js).
+  dashboard: () => req('/dashboard?today=' + localISO()),
+  analytics: () => req('/dashboard/analytics?today=' + localISO()),
   projects: (qs = '') => req('/projects' + qs),
   project: (id) => req(`/projects/${id}`),
   createProject: (d) => req('/projects', { method: 'POST', body: JSON.stringify(d) }),

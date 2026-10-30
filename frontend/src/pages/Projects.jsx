@@ -8,7 +8,7 @@ import { useModal } from '../components/Modal.jsx';
 import { ProjectForm } from '../modals/Forms.jsx';
 import { typeLabel, typeClass, typeIcon, projStatusLabel, projStatusClass, projStatusColor, hrs, money, idleText, idleColor } from '../lib/format.js';
 
-export default function Projects({ onMenu }) {
+export default function Projects() {
   const { projects, pinProject } = useStore();
   const { open } = useModal();
   const nav = useNavigate();
@@ -18,7 +18,7 @@ export default function Projects({ onMenu }) {
 
   return (
     <>
-      <Topbar title={<h1>Projects</h1>} sub={`${list.length} project${list.length === 1 ? '' : 's'}`} onMenu={onMenu}>
+      <Topbar title={<h1>Projects</h1>} sub={`${list.length} project${list.length === 1 ? '' : 's'}`}>
         <button className="btn sm" onClick={() => open(<ProjectForm />)}><Icon name="plus" /> Project</button>
       </Topbar>
       <div className="filters">

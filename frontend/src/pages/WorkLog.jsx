@@ -9,7 +9,7 @@ import { WorkLogForm } from '../modals/Forms.jsx';
 import { exportWorkLog } from '../lib/export.js';
 import { hrs, fmtDateFull } from '../lib/format.js';
 
-export default function WorkLog({ onMenu }) {
+export default function WorkLog() {
   const { projects, refresh } = useStore();
   const { open } = useModal();
   const [logs, setLogs] = useState([]);
@@ -32,7 +32,7 @@ export default function WorkLog({ onMenu }) {
 
   return (
     <>
-      <Topbar title={<h1>Work Log</h1>} sub={`Work history — total ${hrs(totalHours)}`} onMenu={onMenu}>
+      <Topbar title={<h1>Work Log</h1>} sub={`Work history — total ${hrs(totalHours)}`}>
         <button className="btn ghost sm" onClick={() => exportWorkLog(logs)}><Icon name="download" /> Export</button>
         <button className="btn sm" onClick={() => open(<WorkLogForm projects={projects} onDone={reload} />)}><Icon name="bolt" /> Log</button>
       </Topbar>

@@ -8,7 +8,7 @@ import { useModal } from '../components/Modal.jsx';
 import { TaskForm } from '../modals/Forms.jsx';
 import { prioClass, prioLabel, fmtDate } from '../lib/format.js';
 
-export default function Tasks({ onMenu }) {
+export default function Tasks() {
   const { projects, refresh } = useStore();
   const { open } = useModal();
   const [tasks, setTasks] = useState([]);
@@ -29,7 +29,7 @@ export default function Tasks({ onMenu }) {
 
   return (
     <>
-      <Topbar title={<h1>Tasks</h1>} sub={`${tasks.filter(t => t.status !== 'done').length} active`} onMenu={onMenu}>
+      <Topbar title={<h1>Tasks</h1>} sub={`${tasks.filter(t => t.status !== 'done').length} active`}>
         <button className="btn sm" onClick={() => open(<TaskForm projects={projects} onDone={reload} />)}><Icon name="plus" /> Task</button>
       </Topbar>
       <div className="filters">

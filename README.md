@@ -30,7 +30,7 @@ Buka `localhost:5173` — langsung masuk, **tanpa login**. (Shortcut: dari `back
 | Fitur | Detail |
 |---|---|
 | **⌘ Command Palette** | Tekan **Ctrl/Cmd + K** — cari aksi, halaman, project. Ala Linear/Raycast. |
-| **⚡ Quick Log Bar** | Di Dashboard: ketik apa yang dikerjain → **Enter** langsung tercatat. Aksi tersering jadi 1 detik. |
+| **➕ Log Work** | Tombol di top bar (atau tekan `n`) buka form catat kerjaan dari halaman mana pun. |
 | **⌨️ Keyboard Shortcuts** | `g d/p/t/w/f/a` navigasi cepat · `n` catat kerjaan · `Ctrl+K` palette · `Esc` tutup |
 | **🔥 Streak** | "5 hari beruntun" — motivasi konsistensi (dihitung di DB). |
 | **📈 KPI Delta** | Jam minggu ini nampilin **+/-% vs minggu lalu**, bukan angka telanjang. |
@@ -40,19 +40,18 @@ Buka `localhost:5173` — langsung masuk, **tanpa login**. (Shortcut: dari `back
 | **🎨 Color Swatch Picker** | Pilih warna project dari palet (bukan color input jelek). |
 | **📊 Progress bar** di card | Card project nampilin % task selesai. |
 | **✨ Empty state ber-CTA** | Kosong → langsung ada tombol aksi, ga cuma teks. |
-| **📱 FAB mobile** | Tombol floating "catat kerjaan" di mobile. |
 | **🌗 Dark/Light** | Toggle, tersimpan. Palet warna direfine (lebih deep & kontras). |
 
 ---
 
 ## 🧩 Halaman
-- **Dashboard** — greeting, streak, quick-log bar, KPI (jam hari ini/minggu + delta, task, income), chart 14 hari (hari ini di-highlight), jam per konteks, kerjaan terakhir, due minggu ini, project mangkrak, tagihan belum dibayar
+- **Dashboard** — urutan: KPI global (Today / Active / Overdue / This Week) → Needs Attention (overdue + due ≤3 hari) → Work Lanes per workspace (Due Today, In Progress, Top Projects/Clients) → Workload 14 hari (stacked per workspace) + This Week → Recent Activity + Upcoming
 - **Projects** — card (warna, pin, progress %, jam, income, staleness), filter segmented
 - **Project Detail** — tabs: Tasks (klik-toggle), Work Log, Payments, Notes
 - **Tasks** — grouped Doing/Todo/Done, quick-toggle
 - **Work Log** ⭐ — timeline per hari + total jam, export CSV
 - **Finance** — income, unpaid, tandai lunas 1-klik, export
-- **Analytics** — jam per konteks, income per bulan, top project
+- **Analytics** — trend mingguan per workspace (8 minggu), jam per workspace, income per bulan, top project
 
 ---
 
@@ -62,7 +61,7 @@ Buka `localhost:5173` — langsung masuk, **tanpa login**. (Shortcut: dari `back
 
 ## 🔌 API (no auth)
 ```
-GET  /api/dashboard   /api/dashboard/analytics
+GET  /api/dashboard?today=YYYY-MM-DD   /api/dashboard/analytics?today=YYYY-MM-DD
 CRUD /api/projects[/:id]   PATCH /:id/pin
 CRUD /api/tasks[/:id]      PATCH /:id/status
 CRUD /api/worklogs[/:id]

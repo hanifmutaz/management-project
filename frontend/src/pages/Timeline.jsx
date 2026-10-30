@@ -28,7 +28,7 @@ function effectiveRange(p, today) {
   return { start, end, open };
 }
 
-export default function Timeline({ onMenu }) {
+export default function Timeline() {
   const { projects } = useStore();
   const nav = useNavigate();
   const [type, setType] = useState('');
@@ -65,7 +65,7 @@ export default function Timeline({ onMenu }) {
 
   return (
     <>
-      <Topbar title={<h1>Timeline</h1>} sub={rows.length ? `${rows.length} project${rows.length === 1 ? '' : 's'} · ${monthYear(minDate)} – ${months.length ? months[months.length - 1].key : ''}` : 'Time range of all projects'} onMenu={onMenu} />
+      <Topbar title={<h1>Timeline</h1>} sub={rows.length ? `${rows.length} project${rows.length === 1 ? '' : 's'} · ${monthYear(minDate)} – ${months.length ? months[months.length - 1].key : ''}` : 'Time range of all projects'} />
       <div className="filters">
         <div className="seg">
           {[['', 'All'], ['office', 'Office'], ['freelance', 'Freelance'], ['parttime', 'Part-time'], ['kuliah', 'Study'], ['personal', 'Personal']].map(([v, l]) =>

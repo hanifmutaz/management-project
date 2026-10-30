@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import { StoreProvider, useStore } from './lib/store.jsx';
 import { ModalProvider, useModal } from './components/Modal.jsx';
-import { Sidebar, BottomNav, ToastHost } from './components/Layout.jsx';
+import { Sidebar, AppBar, BottomNav, ToastHost } from './components/Layout.jsx';
 import CommandPalette from './components/CommandPalette.jsx';
 import { WorkLogForm } from './modals/Forms.jsx';
 import Icon from './components/Icon.jsx';
@@ -67,8 +67,8 @@ function Shell() {
 
   if (loading) return (
     <div className="app">
-      <Sidebar open={false} onClose={onClose} onCmd={() => setCmd(true)} />
-      <main className="main"><div style={{ marginBottom:20 }}><div className="sk sk-line" style={{ width:220, height:24 }} /></div><SkeletonDash /></main>
+      <Sidebar open={false} onClose={onClose} />
+      <main className="main"><div className="content"><div style={{ marginBottom:20 }}><div className="sk sk-line" style={{ width:220, height:24 }} /></div><SkeletonDash /></div></main>
     </div>
   );
   if (error === 'Unauthorized') {
@@ -88,22 +88,24 @@ function Shell() {
     <>
       <div className="app">
         {drawer && <div className="scrim" onClick={onClose} />}
-        <Sidebar open={drawer} onClose={onClose} onCmd={() => setCmd(true)} />
+        <Sidebar open={drawer} onClose={onClose} />
         <main className="main">
+          <AppBar onMenu={onMenu} onCmd={() => setCmd(true)} onLog={() => open(<WorkLogForm projects={projects} />)} />
+          <div className="content">
           <Routes>
-            <Route path="/" element={<Dashboard onMenu={onMenu} />} />
-            <Route path="/projects" element={<Projects onMenu={onMenu} />} />
-            <Route path="/projects/:id" element={<ProjectDetail onMenu={onMenu} />} />
-            <Route path="/tasks" element={<Tasks onMenu={onMenu} />} />
-            <Route path="/worklog" element={<WorkLog onMenu={onMenu} />} />
-            <Route path="/timeline" element={<Timeline onMenu={onMenu} />} />
-            <Route path="/finance" element={<Finance onMenu={onMenu} />} />
-            <Route path="/analytics" element={<Analytics onMenu={onMenu} />} />
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/projects" element={<Projects />} />
+            <Route path="/projects/:id" element={<ProjectDetail />} />
+            <Route path="/tasks" element={<Tasks />} />
+            <Route path="/worklog" element={<WorkLog />} />
+            <Route path="/timeline" element={<Timeline />} />
+            <Route path="/finance" element={<Finance />} />
+            <Route path="/analytics" element={<Analytics />} />
           </Routes>
+          </div>
         </main>
       </div>
       <BottomNav />
-      <button className="fab" onClick={() => open(<WorkLogForm projects={projects} />)} title="Log work" aria-label="Log work"><Icon name="bolt" /></button>
       {cmd && <CommandPalette onClose={() => setCmd(false)} />}
       <ToastHost />
     </>

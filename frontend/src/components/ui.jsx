@@ -42,15 +42,21 @@ export function DataTable({ cols, rows, cardTitle, empty = 'No data yet.' }) {
     </>
   );
 }
-export function Donut({ segs, center, label }) {
+export function Donut({ segs, center, label, size = 130 }) {
   const total = segs.reduce((a, s) => a + s.v, 0) || 1;
+  const gap = segs.length > 1 ? 0.8 : 0;
   let off = 25;
   return (
-    <svg width="130" height="130" viewBox="0 0 42 42">
-      <circle cx="21" cy="21" r="15.9" fill="transparent" stroke="var(--panel2)" strokeWidth="5" />
-      {segs.map((s, i) => { const len = s.v / total * 100; const el = <circle key={i} cx="21" cy="21" r="15.9" fill="transparent" stroke={s.c} strokeWidth="5" strokeDasharray={`${len} ${100 - len}`} strokeDashoffset={off} strokeLinecap="round" />; off -= len; return el; })}
-      <text x="21" y="21" textAnchor="middle" fill="var(--txt)" fontSize="6.5" fontWeight="bold">{center}</text>
-      {label && <text x="21" y="26" textAnchor="middle" fill="var(--muted)" fontSize="3">{label}</text>}
+    <svg width={size} height={size} viewBox="0 0 42 42" role="img" aria-label={`${center} ${label || ''}`}>
+      <circle cx="21" cy="21" r="15.9155" fill="none" style={{ stroke:'var(--panel3)' }} strokeWidth="5.2" />
+      {segs.map((s, i) => {
+        const len = s.v / total * 100;
+        const el = <circle key={i} cx="21" cy="21" r="15.9155" fill="none" style={{ stroke:s.c }} strokeWidth="5.2" strokeDasharray={`${Math.max(len - gap, 0)} ${100 - Math.max(len - gap, 0)}`} strokeDashoffset={off} />;
+        off -= len;
+        return el;
+      })}
+      <text x="21" y={label ? 21.5 : 23} textAnchor="middle" style={{ fill:'var(--txt)' }} fontSize="6.4" fontWeight="600">{center}</text>
+      {label && <text x="21" y="26.5" textAnchor="middle" style={{ fill:'var(--muted)' }} fontSize="2.9">{label}</text>}
     </svg>
   );
 }
@@ -58,15 +64,20 @@ export function DeltaChip({ delta }) {
   if (!delta) return null;
   return <span className={`dl ${delta.up ? 'up' : delta.flat ? 'flat' : 'down'}`}>{!delta.flat && <Icon name={delta.up ? 'arrowUp' : 'arrowDown'} size="sm" />}{delta.text}</span>;
 }
-export function KpiCard({ label, value, tag, delta, accent = 'acc-blue', icon }) {
+// tone: dot color before the caption (danger | ok | warn). progress: 0-100 bar under the value.
+export function KpiCard({ label, value, tag, delta, tone, progress }) {
   return (
-    <div className={`kpi ${accent}`}>
-      {icon && <span className="ico"><Icon name={icon} size="" /></span>}
+    <div className="kpi">
       <div className="lbl">{label}</div>
       <div className="val">{value}</div>
-      <div className="tag"><DeltaChip delta={delta} />{tag}</div>
+      {progress != null && <div className="bar slim"><i style={{ width: progress + '%' }} /></div>}
+      <div className="tag">{tone && <span className={`sdot ${tone}`} />}<DeltaChip delta={delta} />{tag}</div>
     </div>
   );
+}
+// Small colored label naming a workspace (Office, Freelance...).
+export function WorkspaceTag({ type, label }) {
+  return <span className="badge" style={{ '--c': `var(--c-${type})` }}>{label}</span>;
 }
 // Tiny line+area chart. `labels` (same length as `values`) feed the hover tooltips.
 export function Sparkline({ values, labels = [], color = 'var(--brand)', unit = 'h' }) {
@@ -84,13 +95,13 @@ export function Sparkline({ values, labels = [], color = 'var(--brand)', unit = 
     <svg className="spark" viewBox={`0 0 ${w} ${h}`} role="img" aria-label={`Trend over ${n} weeks`}>
       <defs>
         <linearGradient id={gid} x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity=".3" />
-          <stop offset="100%" stopColor={color} stopOpacity="0" />
+          <stop offset="0%" style={{ stopColor:color }} stopOpacity=".18" />
+          <stop offset="100%" style={{ stopColor:color }} stopOpacity="0" />
         </linearGradient>
       </defs>
       <path d={area} fill={`url(#${gid})`} />
-      <path d={line} fill="none" stroke={color} strokeWidth="1.8" strokeLinejoin="round" strokeLinecap="round" />
-      <circle cx={x(n - 1)} cy={y(values[n - 1])} r="2.8" fill={color} />
+      <path d={line} fill="none" style={{ stroke:color }} strokeWidth="1.8" strokeLinejoin="round" strokeLinecap="round" />
+      <circle cx={x(n - 1)} cy={y(values[n - 1])} r="2.6" style={{ fill:color }} />
       {values.map((v, i) => (
         <rect key={i} x={x(i) - colW / 2} y="0" width={colW} height={h} fill="transparent">
           <title>{`${labels[i] ? 'Week of ' + labels[i] + ': ' : ''}${Number.isInteger(v) ? v : v.toFixed(1)}${unit}`}</title>

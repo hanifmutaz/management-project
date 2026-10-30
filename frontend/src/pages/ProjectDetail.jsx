@@ -9,7 +9,7 @@ import { useModal } from '../components/Modal.jsx';
 import { ProjectForm, TaskForm, WorkLogForm, PaymentForm } from '../modals/Forms.jsx';
 import { typeLabel, typeClass, projStatusLabel, projStatusClass, taskLabel, taskClass, prioClass, prioLabel, payLabel, payClass, hrs, money, fmtDate } from '../lib/format.js';
 
-export default function ProjectDetail({ onMenu }) {
+export default function ProjectDetail() {
   const { id } = useParams();
   const nav = useNavigate();
   const { projects, refresh } = useStore();
@@ -40,7 +40,7 @@ export default function ProjectDetail({ onMenu }) {
 
   return (
     <>
-      <Topbar title={<h1><span style={{ color:'var(--muted)', fontWeight:400, cursor:'pointer' }} onClick={() => nav('/projects')}>Projects / </span>{p.name}</h1>} sub={`${typeLabel[p.type]} · ${projStatusLabel[p.status]}`} onMenu={onMenu}>
+      <Topbar title={<h1><span style={{ color:'var(--muted)', fontWeight:400, cursor:'pointer' }} onClick={() => nav('/projects')}>Projects / </span>{p.name}</h1>} sub={`${typeLabel[p.type]} · ${projStatusLabel[p.status]}`}>
         <button className="btn ghost sm" onClick={() => open(<WorkLogForm projects={projects} defaultProject={p.id} tasks={p.tasks} onDone={reload} />)}><Icon name="bolt" /> Log</button>
         <button className="btn sm" onClick={() => open(<ProjectForm edit={p} onDone={reload} />)}><Icon name="edit" /> Edit</button>
       </Topbar>

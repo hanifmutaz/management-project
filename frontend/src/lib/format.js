@@ -1,6 +1,9 @@
 export const typeLabel = { office:'Office', freelance:'Freelance', parttime:'Part-time', personal:'Personal', kuliah:'Study' };
 export const typeClass = { office:'b-blue', freelance:'b-green', parttime:'b-purple', personal:'b-yellow', kuliah:'b-cyan' };
-export const typeColor = { office:'#5b8cff', freelance:'#34d399', parttime:'#9b6bff', personal:'#fbbf24', kuliah:'#22d3ee' };
+// Workspace colors are CSS variables (see styles.css) so light and dark mode each get a tuned shade.
+export const typeColor = { office:'var(--c-office)', freelance:'var(--c-freelance)', parttime:'var(--c-parttime)', personal:'var(--c-personal)', kuliah:'var(--c-kuliah)' };
+export const typeDesc = { office:'Internal team projects', freelance:'Client projects and independent work', parttime:'Part-time and teaching work', personal:'Personal projects and learning', kuliah:'Coursework and study' };
+export const TYPE_ORDER = ['office', 'freelance', 'parttime', 'personal', 'kuliah'];
 export const typeIcon = { office:'briefcase', freelance:'wallet', parttime:'clock', personal:'user', kuliah:'book' };
 // Shades per category — every project in a category picks one of these colors, so a glance
 // tells you "this is office/freelance/etc." (same hue) while projects stay distinguishable
@@ -20,7 +23,7 @@ export const projStatusColor = { active:'var(--green)', on_hold:'var(--yellow)',
 export const taskLabel = { todo:'To Do', doing:'Doing', done:'Done' };
 export const taskClass = { todo:'b-gray', doing:'b-blue', done:'b-green' };
 export const prioLabel = { low:'Low', medium:'Medium', high:'High' };
-export const prioClass = { low:'b-gray', medium:'b-yellow', high:'b-orange' };
+export const prioClass = { low:'b-gray', medium:'b-yellow', high:'b-red' };
 
 export const payLabel = { unpaid:'Unpaid', invoiced:'Invoiced', paid:'Paid' };
 export const payClass = { unpaid:'b-orange', invoiced:'b-yellow', paid:'b-green' };
@@ -139,4 +142,34 @@ export function localISO(d = new Date()) {
 export function weekLabel(iso) {
   const [, m, d] = String(iso).split('-');
   return `${MON[+m - 1]} ${+d}`;
+}
+
+// Whole days from `from` to `to` (both YYYY-MM-DD); negative when `to` is earlier.
+export function dayDiff(to, from = localISO()) {
+  const a = parseDate(to), b = parseDate(from);
+  if (!a || !b) return 0;
+  return Math.round((a - b) / 86400000);
+}
+// "Fri, 30 Oct 2026" for the app bar.
+export function todayLabel() {
+  const d = new Date();
+  return `${DAY[d.getDay()]}, ${d.getDate()} ${MON[d.getMonth()]} ${d.getFullYear()}`;
+}
+// Group heading for Upcoming: Today / Tomorrow / "Tuesday, 5 Nov".
+export function dayHeading(iso) {
+  const diff = dayDiff(iso);
+  if (diff === 0) return 'Today';
+  if (diff === 1) return 'Tomorrow';
+  const d = parseDate(iso);
+  return d ? `${DAYFULL[d.getDay()]}, ${d.getDate()} ${MON[d.getMonth()]}` : String(iso);
+}
+// Due-date text + tone for a task row. tone: danger | warn | muted
+export function dueInfo(iso) {
+  if (!iso) return { text: 'No due date', tone: 'muted' };
+  const diff = dayDiff(iso);
+  if (diff < 0) return { text: diff === -1 ? 'Yesterday' : `${-diff} days ago`, tone: 'danger' };
+  if (diff === 0) return { text: 'Today', tone: 'danger' };
+  if (diff === 1) return { text: 'Tomorrow', tone: 'warn' };
+  const d = parseDate(iso);
+  return { text: `${d.getDate()} ${MON[d.getMonth()]}`, tone: 'muted' };
 }
